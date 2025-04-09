@@ -44,8 +44,5 @@
       "src": "/(.*)",
       "dest": "/oauth-server.js"
     }
-  ],
-  "env": {
-    "NODE_VERSION": "18.x"
-  }
+  ]
 }

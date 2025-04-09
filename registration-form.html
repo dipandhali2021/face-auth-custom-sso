@@ -1,133 +1,312 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Registration</title>
+  <title>Create Account</title>
   <style>
-    body { 
-      font-family: Arial, sans-serif; 
-      margin: 40px; 
-      background-color: #f8f9fa;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #fffbf0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
-    .container { 
-      max-width: 600px; 
-      margin: 0 auto; 
+
+    .container {
+      width: 100%;
+      max-width: 450px;
+      margin: 0 auto;
       background-color: white;
       padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
-    h1 { 
-      color: #333; 
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .form-group {
+
+    .icon-container {
+      display: flex;
+      justify-content: center;
       margin-bottom: 20px;
     }
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: bold;
-      color: #555;
+
+    .dollar-icon {
+      background-color: #ffd54f;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #333;
     }
-    input[type="text"],
-    input[type="email"],
-    input[type="tel"] {
+
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 5px;
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 25px;
+      font-size: 14px;
+    }
+
+    .google-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       width: 100%;
       padding: 10px;
       border: 1px solid #ddd;
       border-radius: 4px;
-      font-size: 16px;
+      background: white;
+      cursor: pointer;
+      font-size: 14px;
+      margin-bottom: 20px;
     }
-    .btn { 
-      display: inline-block; 
-      background: #4285f4; 
-      color: white; 
-      padding: 12px 24px; 
-      text-decoration: none; 
-      border-radius: 5px; 
+
+    .google-icon {
+      margin-right: 10px;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 20px 0;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .divider::before {
+      margin-right: 10px;
+    }
+
+    .divider::after {
+      margin-left: 10px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+      flex: 1;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #333;
+      font-size: 14px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="tel"]:focus,
+    input[type="password"]:focus {
+      outline: none;
+      border-color: #4285f4;
+    }
+
+    .password-field {
+      position: relative;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #666;
+    }
+
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      margin: 15px 0;
+    }
+
+    .checkbox-container input {
+      margin-right: 10px;
+    }
+
+    .checkbox-container label {
+      margin-bottom: 0;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .terms-link {
+      color: #4285f4;
+      text-decoration: none;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      background: #666;
+      color: white;
+      padding: 12px 24px;
+      text-decoration: none;
+      border-radius: 4px;
       margin-top: 20px;
       border: none;
       cursor: pointer;
-      font-size: 16px;
-      font-weight: bold;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
     }
+
     .btn:hover {
-      background: #3367d6;
+      background: #555;
     }
+
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .login-link a {
+      color: #4285f4;
+      text-decoration: none;
+    }
+
     .required {
       color: #e53935;
     }
-    .btn-container {
-      text-align: center;
+
+    @media (max-width: 480px) {
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .container {
+        padding: 20px;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="container">
-    <h1>User Registration</h1>
-    <p>Please provide your information to complete registration.</p>
-    
+    <div class="icon-container">
+      <div class="dollar-icon">$</div>
+    </div>
+
+    <p class="subtitle">Enter your details to get started</p>
+
     <form id="registration-form" method="post" action="/register-user">
       <input type="hidden" name="request" id="request-data">
-      
-      <div class="form-group">
-        <label for="firstName">First Name <span class="required">*</span></label>
-        <input type="text" id="firstName" name="firstName" required>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input type="text" id="firstName" name="firstName" placeholder="John" required>
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input type="text" id="lastName" name="lastName" placeholder="Doe" required>
+        </div>
       </div>
-      
+
       <div class="form-group">
-        <label for="lastName">Last Name <span class="required">*</span></label>
-        <input type="text" id="lastName" name="lastName" required>
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="john@example.com" required>
       </div>
-      
+
       <div class="form-group">
-        <label for="username">Username</label>
+        <label for="username">Username (optional)</label>
         <input type="text" id="username" name="username">
       </div>
-      
+
       <div class="form-group">
-        <label for="email">Email Address <span class="required">*</span></label>
-        <input type="email" id="email" name="email" required>
+        <label for="phone">Phone Number (optional)</label>
+        <input type="tel" id="phone" name="phone" placeholder="+1 (555) 123-4567">
       </div>
-      
-      <div class="form-group">
-        <label for="phone">Phone Number</label>
-        <input type="tel" id="phone" name="phone">
-      </div>
-      
-      <div class="btn-container">
-        <button type="submit" class="btn">Continue to Face Registration</button>
-      </div>
+
+      <button type="submit" class="btn">Create account</button>
+
+
     </form>
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       // Get request data from URL
       const urlParams = new URLSearchParams(window.location.search);
       const requestData = urlParams.get('request');
-      
+
       if (requestData) {
         document.getElementById('request-data').value = requestData;
       } else {
         alert('Missing request data. Please try again.');
       }
-      
+
       // Form validation
-      document.getElementById('registration-form').addEventListener('submit', function(e) {
+      document.getElementById('registration-form').addEventListener('submit', function (e) {
         const firstName = document.getElementById('firstName').value.trim();
         const lastName = document.getElementById('lastName').value.trim();
         const email = document.getElementById('email').value.trim();
-        
+
         if (!firstName || !lastName || !email) {
           e.preventDefault();
           alert('Please fill in all required fields.');
         }
       });
+
+      // Password visibility toggle
+      const passwordField = document.getElementById('password');
+      const passwordToggle = document.querySelector('.password-toggle');
+
+      passwordToggle.addEventListener('click', function () {
+        if (passwordField.type === 'password') {
+          passwordField.type = 'text';
+          passwordToggle.textContent = '🔒';
+        } else {
+          passwordField.type = 'password';
+          passwordToggle.textContent = '👁️';
+        }
+      });
     });
   </script>
 </body>
+
 </html>

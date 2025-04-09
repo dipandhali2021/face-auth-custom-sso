@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Face Authentication Failed</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      body { 
+        font-family: Arial, sans-serif; 
+        margin: 0; 
+        padding: 20px;
+        background-color: #fffbf0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+      .container { 
+        width: 100%;
+        max-width: 450px; 
+        margin: 0 auto; 
+        background-color: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        text-align: center;
+      }
+      .icon-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+      .dollar-icon {
+        background-color: #ffd54f;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: #333;
+      }
+      h1 { 
+        color: #333; 
+        text-align: center;
+        margin-bottom: 5px;
+        font-size: 22px;
+        font-weight: 600;
+      }
+      .subtitle {
+        color: #666;
+        margin-bottom: 25px;
+        font-size: 14px;
+      }
+      .message { 
+        background-color: #f8d7da; 
+        color: #721c24; 
+        padding: 15px; 
+        border-radius: 5px; 
+        margin: 20px 0; 
+      }
+      .tips {
+        padding-left: 20px;
+        color: #666;
+        text-align: left;
+        margin: 20px 0;
+      }
+      .tips li {
+        margin-bottom: 8px;
+      }
+      .btn-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      .btn { 
+        display: inline-block; 
+        padding: 12px;
+        border-radius: 4px; 
+        text-decoration: none; 
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        width: 100%;
+      }
+      .btn-primary {
+        background: #34a853; 
+        color: white; 
+      }
+      .btn-primary:hover {
+        background: #2d9348;
+      }
+      .btn-secondary {
+        background: #666; 
+        color: white; 
+      }
+      .btn-secondary:hover {
+        background: #555;
+      }
+      @media (max-width: 480px) {
+        .container { padding: 20px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="icon-container">
+        <div class="dollar-icon">$</div>
+      </div>
+      <h1>Face Authentication Failed</h1>
+      <p class="subtitle">We couldn't match your face with any registered profile.</p>
+      
+      <div class="message">
+        <p>Your face wasn't recognized in our system.</p>
+      </div>
+      
+      <ul class="tips">
+        <li>Make sure you're using the same face that was registered</li>
+        <li>Ensure good lighting conditions</li>
+        <li>Position your face clearly in the camera</li>
+        <li>Remove any face coverings or accessories</li>
+      </ul>
+      
+      <div class="btn-container">
+        <a href="#" id="retry-link" class="btn btn-secondary">Try Again</a>
+        <a href="/register" id="register-link" class="btn btn-primary">Register New Face</a>
+      </div>
+      
+      <script>
+        // Get request data from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const requestData = urlParams.get('request');
+        
+        // Set up retry button to go back to face authentication
+        const retryLink = document.getElementById('retry-link');
+        retryLink.addEventListener('click', function(e) {
+          e.preventDefault();
+          window.history.back();
+        });
+        
+        // Append request data to register link if available
+        if (requestData) {
+          const registerLink = document.getElementById('register-link');
+          registerLink.href = `/register?request=${requestData}`;
+        }
+      </script>
+    </div>
+  </body>
+</html>

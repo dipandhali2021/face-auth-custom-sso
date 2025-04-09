@@ -15,7 +15,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 // Import MongoDB models and face recognition utilities
-const { connectDB, User, FaceProfile, Token, AuthCode } = require('./models/db');
+const { connectDB, User, FaceProfile, Token, AuthCode } = require('./utils/db');
 const faceRecognition = require('./utils/faceRecognition');
 const cloudinary = require('./utils/cloudinary');
 
@@ -52,6 +52,7 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
 
 // Session middleware for maintaining login state
@@ -194,97 +195,11 @@ app.get('/oauth/authorize', (req, res) => {
     state: state || ''
   };
   
-  // Render a modern login page that matches the JewelTrack design
-  res.send(`
-    <html>
-      <head>
-        <title>Face Authentication</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-          body { 
-            font-family: Arial, sans-serif; 
-            margin: 0; 
-            padding: 20px;
-            background-color: #fffbf0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-          }
-          .container { 
-            width: 100%;
-            max-width: 450px; 
-            margin: 0 auto; 
-            background-color: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-          }
-          .icon-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-          }
-          .dollar-icon {
-            background-color: #ffd54f;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: #333;
-          }
-          h1 { 
-            color: #333; 
-            text-align: center;
-            margin-bottom: 5px;
-            font-size: 22px;
-            font-weight: 600;
-          }
-          .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 25px;
-            font-size: 14px;
-          }
-          .btn { 
-            display: block;
-            background: #666;
-            color: white; 
-            padding: 12px 24px; 
-            text-decoration: none; 
-            border-radius: 4px; 
-            margin-top: 20px;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            text-align: center;
-          }
-          .btn:hover {
-            background: #555;
-          }
-          @media (max-width: 480px) {
-            .container {
-              padding: 20px;
-            }
-          }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="icon-container">
-            <div class="dollar-icon">$</div>
-          </div>
-          <h1>JewelTrack Authentication</h1>
-          <p class="subtitle">Authenticate with facial recognition to continue</p>
-          <a href="/face-auth?request=${Buffer.from(JSON.stringify(authRequest)).toString('base64')}" class="btn">Continue with Face Authentication</a>
-        </div>
-      </body>
-    </html>
-  `);
+  // Read the HTML file and replace the placeholder with the request data
+  const authorizePage = fs.readFileSync(path.join(__dirname, 'public', 'authorize.html'), 'utf8');
+  const renderedPage = authorizePage.replace('{{requestData}}', Buffer.from(JSON.stringify(authRequest)).toString('base64'));
+  
+  res.send(renderedPage);
 });
 
 // Face Authentication Page
@@ -295,303 +210,11 @@ app.get('/face-auth', (req, res) => {
   }
   
   try {
-    const authRequest = JSON.parse(Buffer.from(requestData, 'base64').toString());
+    // Parse the request data to validate it
+    JSON.parse(Buffer.from(requestData, 'base64').toString());
     
-    // Render the face authentication page with modern JewelTrack design
-    res.send(`
-      <html>
-        <head>
-          <title>Face Authentication</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style>
-            body { 
-              font-family: Arial, sans-serif; 
-              margin: 0; 
-              padding: 20px;
-              background-color: #fffbf0;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              min-height: 100vh;
-            }
-            .container { 
-              width: 100%;
-              max-width: 450px; 
-              margin: 0 auto; 
-              background-color: white;
-              padding: 30px;
-              border-radius: 12px;
-              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-              text-align: center;
-            }
-            .icon-container {
-              display: flex;
-              justify-content: center;
-              margin-bottom: 20px;
-            }
-            .dollar-icon {
-              background-color: #ffd54f;
-              width: 40px;
-              height: 40px;
-              border-radius: 50%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-size: 24px;
-              color: #333;
-            }
-            h1 { 
-              color: #333; 
-              text-align: center;
-              margin-bottom: 5px;
-              font-size: 22px;
-              font-weight: 600;
-            }
-            .subtitle {
-              text-align: center;
-              color: #666;
-              margin-bottom: 25px;
-              font-size: 14px;
-            }
-            #video-container { 
-              margin: 20px 0; 
-              border-radius: 8px;
-              overflow: hidden;
-              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            }
-            #video { 
-              width: 100%;
-              max-width: 400px;
-              border-radius: 8px;
-              display: block;
-              margin: 0 auto;
-            }
-            .btn { 
-              background: #666; 
-              color: white; 
-              padding: 12px 24px; 
-              text-decoration: none; 
-              border-radius: 4px; 
-              margin-top: 20px;
-              border: none;
-              cursor: pointer;
-              font-size: 14px;
-            }
-            .btn:hover {
-              background: #555;
-            }
-            .btn-register { 
-              background: #34a853; 
-              margin-left: 10px;
-            }
-            .btn-register:hover {
-              background: #2d9348;
-            }
-            @media (max-width: 480px) {
-              .container {
-                padding: 20px;
-              }
-              .btn {
-                display: block;
-                width: 100%;
-                margin: 10px auto;
-              }
-              .btn-register {
-                margin-left: 0;
-              }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="icon-container">
-              <div class="dollar-icon">$</div>
-            </div>
-            <h1>Face Authentication</h1>
-            <p class="subtitle">Please look at the camera to authenticate</p>
-            
-            <div id="video-container">
-              <video id="video" width="400" height="300" autoplay></video>
-              <canvas id="canvas" width="400" height="300" style="display:none;"></canvas>
-            </div>
-            
-            <div>
-              <button id="authenticate-btn" class="btn">Authenticate</button>
-              <button id="register-btn" class="btn btn-register">Register New Face</button>
-            </div>
-            
-            <form id="auth-form" method="post" action="/face-auth/verify" style="display:none;">
-              <input type="hidden" name="request" value="${requestData}">
-              <input type="hidden" name="faceImage" id="face-image">
-              <input type="hidden" name="action" id="action-type">
-            </form>
-            
-            <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-            <style>
-              /* Loading spinner styles */
-              .loading-container {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                background-color: rgba(255, 255, 255, 0.9);
-                z-index: 10;
-                border-radius: 12px;
-              }
-              
-              .spinner {
-                width: 50px;
-                height: 50px;
-                border: 5px solid #f3f3f3;
-                border-top: 5px solid #ffd54f;
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
-                margin-bottom: 15px;
-              }
-              
-              @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-              }
-              
-              .loading-text {
-                font-size: 16px;
-                color: #333;
-                text-align: center;
-                margin-top: 10px;
-              }
-              
-              .loading-progress {
-                font-size: 14px;
-                color: #666;
-                margin-top: 5px;
-              }
-            </style>
-            
-            <script>
-              const video = document.getElementById('video');
-              const canvas = document.getElementById('canvas');
-              const authForm = document.getElementById('auth-form');
-              const faceImageInput = document.getElementById('face-image');
-              const actionTypeInput = document.getElementById('action-type');
-              const authenticateBtn = document.getElementById('authenticate-btn');
-              const registerBtn = document.getElementById('register-btn');
-              
-              let modelsLoaded = false;
-              
-              // Create loading overlay
-              const loadingContainer = document.createElement('div');
-              loadingContainer.className = 'loading-container';
-              
-              const spinner = document.createElement('div');
-              spinner.className = 'spinner';
-              
-              const loadingText = document.createElement('div');
-              loadingText.className = 'loading-text';
-              loadingText.textContent = 'Loading face detection models...';
-              
-              const loadingProgress = document.createElement('div');
-              loadingProgress.className = 'loading-progress';
-              loadingProgress.textContent = 'Please wait a moment';
-              
-              loadingContainer.appendChild(spinner);
-              loadingContainer.appendChild(loadingText);
-              loadingContainer.appendChild(loadingProgress);
-              
-              // Add loading overlay to container
-              document.querySelector('.container').appendChild(loadingContainer);
-              
-              // Disable buttons while loading
-              authenticateBtn.disabled = true;
-              registerBtn.disabled = true;
-              
-              // Load face-api.js models
-              async function loadModels() {
-                const MODEL_URL = '/models';
-                try {
-                  loadingProgress.textContent = 'Loading face detector...';
-                  await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-                  
-                  loadingProgress.textContent = 'Loading facial landmarks...';
-                  await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
-                  
-                  loadingProgress.textContent = 'Loading face recognition...';
-                  await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-                  
-                  modelsLoaded = true;
-                  
-                  // Remove loading overlay
-                  loadingContainer.style.display = 'none';
-                  
-                  // Enable buttons
-                  authenticateBtn.disabled = false;
-                  registerBtn.disabled = false;
-                } catch (error) {
-                  console.error('Error loading models:', error);
-                  loadingText.textContent = 'Error loading face detection models';
-                  loadingProgress.textContent = 'Please refresh the page and try again';
-                  loadingProgress.style.color = '#e53935';
-                }
-              }
-              
-              // Start video stream
-              async function startVideo() {
-                try {
-                  const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
-                  video.srcObject = stream;
-                } catch (err) {
-                  console.error('Error accessing camera:', err);
-                  loadingText.textContent = 'Camera access error';
-                  loadingProgress.textContent = 'Please ensure camera access is allowed and refresh the page';
-                  loadingProgress.style.color = '#e53935';
-                }
-              }
-              
-              // Capture face image
-              function captureFace(action) {
-                if (!modelsLoaded) {
-                  // Show loading container again if models aren't loaded
-                  loadingContainer.style.display = 'flex';
-                  return;
-                }
-                
-                const context = canvas.getContext('2d');
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                
-                // Get the image data as base64
-                const imageData = canvas.toDataURL('image/jpeg');
-                faceImageInput.value = imageData.split(',')[1]; // Remove the data URL prefix
-                actionTypeInput.value = action;
-                
-                // For registration, redirect to registration form first
-                if (action === 'register') {
-                  // Store the face image in session storage temporarily
-                  sessionStorage.setItem('faceImage', imageData.split(',')[1]);
-                  // Redirect to registration form
-                  window.location.href = '/register?request=${requestData}';
-                } else {
-                  // For authentication, submit the form directly
-                  authForm.submit();
-                }
-              }
-              
-              // Initialize
-              loadModels();
-              startVideo();
-              
-              // Event listeners
-              authenticateBtn.addEventListener('click', () => captureFace('authenticate'));
-              registerBtn.addEventListener('click', () => captureFace('register'));
-            </script>
-          </div>
-        </body>
-      </html>
-    `);
+    // Serve the face authentication HTML file
+    res.sendFile(path.join(__dirname, 'public', 'face-auth.html'));
   } catch (error) {
     console.error('Error parsing request data:', error);
     res.status(400).send('Invalid request format');
@@ -605,199 +228,8 @@ app.get('/register', (req, res) => {
     return res.status(400).send('Invalid request');
   }
   
-  // Render the registration form HTML inline
-  res.send(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Create Account</title>
-      <style>
-        body {
-          font-family: Arial, sans-serif;
-          margin: 0;
-          padding: 20px;
-          background-color: #fffbf0;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          min-height: 100vh;
-        }
-
-        .container {
-          width: 100%;
-          max-width: 450px;
-          margin: 0 auto;
-          background-color: white;
-          padding: 30px;
-          border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .icon-container {
-          display: flex;
-          justify-content: center;
-          margin-bottom: 20px;
-        }
-
-        .dollar-icon {
-          background-color: #ffd54f;
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 24px;
-          color: #333;
-        }
-
-        h1 {
-          color: #333;
-          text-align: center;
-          margin-bottom: 5px;
-          font-size: 22px;
-          font-weight: 600;
-        }
-
-        .subtitle {
-          text-align: center;
-          color: #666;
-          margin-bottom: 25px;
-          font-size: 14px;
-        }
-
-        .form-row {
-          display: flex;
-          gap: 15px;
-          margin-bottom: 15px;
-        }
-
-        .form-group {
-          margin-bottom: 15px;
-          flex: 1;
-        }
-
-        label {
-          display: block;
-          margin-bottom: 6px;
-          font-weight: 500;
-          color: #333;
-          font-size: 14px;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="tel"] {
-          width: 100%;
-          padding: 10px;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-          font-size: 14px;
-          box-sizing: border-box;
-        }
-
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="tel"]:focus {
-          outline: none;
-          border-color: #4285f4;
-        }
-
-        .btn {
-          display: block;
-          width: 100%;
-          background: #666;
-          color: white;
-          padding: 12px 24px;
-          text-decoration: none;
-          border-radius: 4px;
-          margin-top: 20px;
-          border: none;
-          cursor: pointer;
-          font-size: 14px;
-          font-weight: 500;
-          text-align: center;
-        }
-
-        .btn:hover {
-          background: #555;
-        }
-
-        @media (max-width: 480px) {
-          .form-row {
-            flex-direction: column;
-            gap: 0;
-          }
-
-          .container {
-            padding: 20px;
-          }
-        }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="icon-container">
-          <div class="dollar-icon">$</div>
-        </div>
-
-        <h1>Create Account</h1>
-        <p class="subtitle">Enter your details to get started</p>
-
-        <form id="registration-form" method="post" action="/register-user">
-          <input type="hidden" name="request" id="request-data" value="${requestData}">
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="firstName">First Name</label>
-              <input type="text" id="firstName" name="firstName" placeholder="John" required>
-            </div>
-
-            <div class="form-group">
-              <label for="lastName">Last Name</label>
-              <input type="text" id="lastName" name="lastName" placeholder="Doe" required>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="john@example.com" required>
-          </div>
-
-          <div class="form-group">
-            <label for="username">Username (optional)</label>
-            <input type="text" id="username" name="username">
-          </div>
-
-          <div class="form-group">
-            <label for="phone">Phone Number (optional)</label>
-            <input type="tel" id="phone" name="phone" placeholder="+1 (555) 123-4567">
-          </div>
-
-          <button type="submit" class="btn">Create account</button>
-        </form>
-      </div>
-
-      <script>
-        document.addEventListener('DOMContentLoaded', function () {
-          // Form validation
-          document.getElementById('registration-form').addEventListener('submit', function (e) {
-            const firstName = document.getElementById('firstName').value.trim();
-            const lastName = document.getElementById('lastName').value.trim();
-            const email = document.getElementById('email').value.trim();
-
-            if (!firstName || !lastName || !email) {
-              e.preventDefault();
-              alert('Please fill in all required fields.');
-            }
-          });
-        });
-      </script>
-    </body>
-    </html>
-  `);
+  // Serve the registration form HTML file
+  res.sendFile(path.join(__dirname, 'public', 'register.html'));
 });
 
 // Handle Registration Form Submission
@@ -820,182 +252,39 @@ app.post('/register-user', bodyParser.urlencoded({ extended: true }), async (req
       phoneVerified: phone ? true : false
     };
     
-    // Redirect to face capture page with a flag indicating this is coming from registration
-    res.send(`
-      <html>
-        <head>
-          <title>Face Capture</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style>
-            body { 
-              font-family: Arial, sans-serif; 
-              margin: 0; 
-              padding: 20px;
-              background-color: #fffbf0;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              min-height: 100vh;
-            }
-            .container { 
-              width: 100%;
-              max-width: 450px; 
-              margin: 0 auto; 
-              background-color: white;
-              padding: 30px;
-              border-radius: 12px;
-              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-              text-align: center;
-            }
-            .icon-container {
-              display: flex;
-              justify-content: center;
-              margin-bottom: 20px;
-            }
-            .dollar-icon {
-              background-color: #ffd54f;
-              width: 40px;
-              height: 40px;
-              border-radius: 50%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-size: 24px;
-              color: #333;
-            }
-            h1 { 
-              color: #333; 
-              text-align: center;
-              margin-bottom: 5px;
-              font-size: 22px;
-              font-weight: 600;
-            }
-            .subtitle {
-              text-align: center;
-              color: #666;
-              margin-bottom: 25px;
-              font-size: 14px;
-            }
-            #video-container { 
-              margin: 20px 0; 
-              border-radius: 8px;
-              overflow: hidden;
-              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            }
-            #video { 
-              width: 100%;
-              max-width: 400px;
-              border-radius: 8px;
-              display: block;
-              margin: 0 auto;
-            }
-            .btn { 
-              display: block; 
-              background: #666; 
-              color: white; 
-              padding: 12px 24px; 
-              text-decoration: none; 
-              border-radius: 4px; 
-              margin-top: 20px;
-              border: none;
-              cursor: pointer;
-              font-size: 14px;
-              font-weight: 500;
-            }
-            .btn:hover {
-              background: #555;
-            }
-            @media (max-width: 480px) {
-              .container {
-                padding: 20px;
-              }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="icon-container">
-              <div class="dollar-icon">$</div>
-            </div>
-            <h1>Face Registration</h1>
-            <p class="subtitle">Please look at the camera to register your face</p>
-            
-            <div id="video-container">
-              <video id="video" width="400" height="300" autoplay></video>
-              <canvas id="canvas" width="400" height="300" style="display:none;"></canvas>
-            </div>
-            
-            <button id="capture-btn" class="btn">Capture Face</button>
-            
-            <form id="auth-form" method="post" action="/face-auth/verify" style="display:none;">
-              <input type="hidden" name="request" value="${request}">
-              <input type="hidden" name="faceImage" id="face-image">
-              <input type="hidden" name="action" value="register">
-            </form>
-            
-            <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-            <script>
-              const video = document.getElementById('video');
-              const canvas = document.getElementById('canvas');
-              const authForm = document.getElementById('auth-form');
-              const faceImageInput = document.getElementById('face-image');
-              const captureBtn = document.getElementById('capture-btn');
-              
-              let modelsLoaded = false;
-              
-              // Load face-api.js models
-              async function loadModels() {
-                const MODEL_URL = '/models';
-                await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-                await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
-                await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-                modelsLoaded = true;
-              }
-              
-              // Start video stream
-              async function startVideo() {
-                try {
-                  const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
-                  video.srcObject = stream;
-                } catch (err) {
-                  console.error('Error accessing camera:', err);
-                  alert('Could not access the camera. Please ensure camera access is allowed.');
-                }
-              }
-              
-              // Capture face image
-              function captureFace() {
-                if (!modelsLoaded) {
-                  alert('Face detection models are still loading. Please wait.');
-                  return;
-                }
-                
-                const context = canvas.getContext('2d');
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                
-                // Get the image data as base64
-                const imageData = canvas.toDataURL('image/jpeg');
-                faceImageInput.value = imageData.split(',')[1]; // Remove the data URL prefix
-                
-                // Submit the form
-                authForm.submit();
-              }
-              
-              // Initialize
-              loadModels();
-              startVideo();
-              
-              // Event listeners
-              captureBtn.addEventListener('click', captureFace);
-            </script>
-          </div>
-        </body>
-      </html>
-    `);
+    // Redirect to face capture page with the request data
+    res.redirect(`/face-capture.html?request=${encodeURIComponent(request)}`);
   } catch (error) {
     console.error('Error processing registration:', error);
     res.status(500).send('Registration failed: ' + error.message);
   }
+});
+  
+
+// Middleware to clean up temporary files when redirecting to error pages
+app.use((req, res, next) => {
+  // Store the original redirect method
+  const originalRedirect = res.redirect;
+  
+  // Override the redirect method
+  res.redirect = function(url) {
+    // If there's a temporary file path in the session, try to delete it
+    if (req.session && req.session.tempFilePath && fs.existsSync(req.session.tempFilePath)) {
+      try {
+        fs.unlinkSync(req.session.tempFilePath);
+        console.log('Temporary file deleted during redirect:', req.session.tempFilePath);
+        // Clear the temporary file path from session
+        delete req.session.tempFilePath;
+      } catch (error) {
+        console.error('Error deleting temporary file during redirect:', error);
+      }
+    }
+    
+    // Call the original redirect method
+    return originalRedirect.apply(this, arguments);
+  };
+  
+  next();
 });
 
 // Face Authentication Verification Endpoint
@@ -1006,6 +295,19 @@ app.post('/face-auth/verify', bodyParser.urlencoded({ extended: true }), async (
     return res.status(400).send('Missing required parameters');
   }
   
+  // Define a cleanup function to ensure file deletion in all scenarios
+  let filePath = null;
+  const cleanupTempFile = () => {
+    if (filePath && fs.existsSync(filePath)) {
+      try {
+        fs.unlinkSync(filePath);
+        console.log('Temporary file deleted:', filePath);
+      } catch (cleanupError) {
+        console.error('Error deleting temporary file:', cleanupError);
+      }
+    }
+  };
+
   try {
     const authRequest = JSON.parse(Buffer.from(request, 'base64').toString());
     const { clientId, redirectUri, state } = authRequest;
@@ -1013,119 +315,25 @@ app.post('/face-auth/verify', bodyParser.urlencoded({ extended: true }), async (
     // Convert base64 to buffer for saving
     const imageBuffer = Buffer.from(faceImage, 'base64');
     const fileName = `${Date.now()}.jpg`;
-    const filePath = path.join(uploadDir, fileName);
+    filePath = path.join(uploadDir, fileName);
     
     // Save the image locally
     fs.writeFileSync(filePath, imageBuffer);
+    
+    // Store the temporary file path in session for cleanup during redirects
+    req.session.tempFilePath = filePath;
     
     // Extract face descriptor from the image
     const faceDescriptor = await faceRecognition.extractFaceDescriptor(imageBuffer);
     
     if (!faceDescriptor) {
-      // Instead of just sending a text response, serve the error page with JewelTrack design
-      return res.status(400).send(`
-    <html>
-      <head>
-        <title>Face Authentication Error</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-          body { 
-            font-family: Arial, sans-serif; 
-            margin: 0; 
-            padding: 20px;
-            background-color: #fffbf0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-          }
-          .face-auth-error-container {
-            width: 100%;
-            max-width: 450px; 
-            margin: 0 auto; 
-            background-color: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            text-align: center;
-          }
-          .icon-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-          }
-          .dollar-icon {
-            background-color: #ffd54f;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: #333;
-          }
-          h2 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 22px;
-            font-weight: 600;
-          }
-          .subtitle {
-            color: #666;
-            margin-bottom: 25px;
-            font-size: 14px;
-          }
-          .face-auth-error-tips {
-            padding-left: 20px;
-            color: #666;
-            text-align: left;
-            margin: 20px 0;
-          }
-          .face-auth-error-tips li {
-            margin-bottom: 8px;
-          }
-          .face-auth-retry-button {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            background: #666;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 25px;
-            font-size: 14px;
-            font-weight: 500;
-          }
-          .face-auth-retry-button:hover {
-            background: #555;
-          }
-          @media (max-width: 480px) {
-            .face-auth-error-container { padding: 20px; }
-          }
-        </style>
-      </head>
-      <body>
-        <div class="face-auth-error-container">
-          <div class="icon-container">
-            <div class="dollar-icon">$</div>
-          </div>
-          <h2>Face Verification Failed</h2>
-          <p class="subtitle">We couldn't verify your identity. Please ensure:</p>
-          
-          <ul class="face-auth-error-tips">
-            <li>Your face is clearly visible and well-lit</li>
-            <li>You're not wearing sunglasses or face coverings</li>
-            <li>You're facing the camera directly</li>
-            <li>You're at an appropriate distance from the camera</li>
-          </ul>
-          
-          <button class="face-auth-retry-button" onclick="window.history.back()">Try Again</button>
-        </div>
-      </body>
-    </html>
-  `);
+      // Delete the temporary file if no face is detected
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        console.log('Temporary file deleted after no face detected:', filePath);
+      }
+      // Serve the error page for face verification failure
+      return res.status(400).sendFile(path.join(__dirname, 'public', 'face-auth-error.html'));
     }
     
     let userId;
@@ -1199,48 +407,26 @@ app.post('/face-auth/verify', bodyParser.urlencoded({ extended: true }), async (
       const faceProfiles = await FaceProfile.find({});
       
       if (faceProfiles.length === 0) {
-        // Instead of just returning an error, redirect to the registration page
-        // with the original request data preserved
-        return res.send(`
-          <html>
-            <head>
-              <title>No Registered Faces</title>
-              <style>
-                body { font-family: Arial, sans-serif; margin: 40px; }
-                .container { max-width: 600px; margin: 0 auto; text-align: center; }
-                h1 { color: #333; }
-                .message { background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin: 20px 0; }
-                .btn { 
-                  display: inline-block; 
-                  background: #34a853; 
-                  color: white; 
-                  padding: 10px 20px; 
-                  text-decoration: none; 
-                  border-radius: 5px; 
-                  margin-top: 20px;
-                  border: none;
-                  cursor: pointer;
-                }
-              </style>
-            </head>
-            <body>
-              <div class="container">
-                <h1>Face Authentication</h1>
-                <div class="message">
-                  <p>No registered faces found. Please register first to continue.</p>
-                </div>
-                <a href="/register?request=${request}" class="btn">Register Now</a>
-              </div>
-            </body>
-          </html>
-        `);
+        // Delete the temporary file if no registered faces exist
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+          console.log('Temporary file deleted when no registered faces exist:', filePath);
+        }
+        // Redirect to the no-registered-faces page with the request data
+        return res.redirect(`/no-registered-faces.html?request=${encodeURIComponent(request)}`);
       }
       
       // Find the best matching face
       const matchingProfile = faceRecognition.findMatchingFace(faceDescriptor, faceProfiles);
       
       if (!matchingProfile) {
-        return res.redirect(`${redirectUri}?error=access_denied&error_description=Face+authentication+failed&state=${state || ''}`);
+        // Delete the temporary file if no matching face is found
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+          console.log('Temporary file deleted after no face match found:', filePath);
+        }
+        // Redirect to the face-match-failed page with the request data instead of error redirect
+        return res.redirect(`/face-match-failed.html?request=${encodeURIComponent(request)}`);
       }
       
       userId = matchingProfile.userId;
@@ -1249,6 +435,11 @@ app.post('/face-auth/verify', bodyParser.urlencoded({ extended: true }), async (
       user = await User.findOne({ id: userId });
       
       if (!user) {
+        // Delete the temporary file if no user is found for the face
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+          console.log('Temporary file deleted when no user found for face:', filePath);
+        }
         return res.status(401).send('User not found for the authenticated face.');
       }
       
@@ -1291,11 +482,11 @@ app.post('/face-auth/verify', bodyParser.urlencoded({ extended: true }), async (
   } catch (error) {
     console.error('Error processing face authentication:', error);
     // Clean up temporary file in case of error
-    if (filePath && fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-      console.log('Temporary file deleted after error:', filePath);
-    }
+    cleanupTempFile();
     res.status(500).send('Authentication failed: ' + error.message);
+  } finally {
+    // Ensure cleanup happens even if there's an unhandled exception
+    cleanupTempFile();
   }
 });
 

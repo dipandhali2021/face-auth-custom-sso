@@ -4,7 +4,10 @@
   "builds": [
     {
       "src": "oauth-server.js",
-      "use": "@vercel/node@3.0.0"
+      "use": "@vercel/node@3.0.0",
+      "config": {
+        "nodeVersion": "18.x"
+      }
     },
     {
       "src": "public/**",
@@ -34,7 +37,7 @@
     },
     {
       "src": "/register(.*)",
-      "dest": "/oauth-server.js" 
+      "dest": "/oauth-server.js"
     },
     {
       "src": "/upload",

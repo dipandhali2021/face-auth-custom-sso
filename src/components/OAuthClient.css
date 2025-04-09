@@ -1,0 +1,89 @@
+.oauth-client {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.oauth-client h2 {
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.error-message button {
+  background-color: #721c24;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.user-profile {
+  text-align: center;
+}
+
+.profile-image {
+  margin: 15px auto;
+}
+
+.auth-actions {
+  text-align: center;
+}
+
+.auth-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.login-button {
+  background-color: #4285f4;
+  color: white;
+}
+
+.login-button:hover {
+  background-color: #3367d6;
+}
+
+.register-button {
+  background-color: #34a853;
+  color: white;
+}
+
+.register-button:hover {
+  background-color: #2e8b57;
+}
+
+.logout-button {
+  background-color: #ea4335;
+  color: white;
+  margin-top: 15px;
+}
+
+.logout-button:hover {
+  background-color: #d73925;
+}

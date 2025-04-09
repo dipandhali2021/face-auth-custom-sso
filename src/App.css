@@ -1,0 +1,67 @@
+.App {
+  text-align: center;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.App h1 {
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+@media (min-width: 992px) {
+  .app-container {
+    flex-direction: row;
+  }
+  
+  .face-recognition-section {
+    flex: 3;
+  }
+  
+  .oauth-section {
+    flex: 2;
+  }
+}
+
+.face-recognition-section,
+.oauth-section {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.face-recognition-section h2,
+.oauth-section h2 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .App {
+    padding: 10px;
+  }
+  
+  .video-stream {
+    width: 100%;
+    height: auto;
+  }
+}
+
+.App {
+  text-align: center;
+  margin-top: 20px;
+}
+
+video {
+  border: 2px solid #000;
+  border-radius: 10px;
+}

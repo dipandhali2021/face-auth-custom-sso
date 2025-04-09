@@ -6,6 +6,76 @@ A complete OAuth 2.0 server implementation with facial recognition authenticatio
 
 This project implements a custom OAuth 2.0 Authorization Server with facial recognition as the primary authentication method. It allows applications to authenticate users through their face, providing a passwordless and secure authentication experience.
 
+## System Architecture
+
+```mermaid
+graph TB
+    subgraph Client Application
+        CA[Client App]
+    end
+    
+    subgraph OAuth Server
+        AS[Authorization Server]
+        FS[Face Recognition Service]
+        DB[(MongoDB)]
+        CS[Cloudinary Storage]
+    end
+    
+    CA -->|1. Authorization Request| AS
+    AS -->|2. Face Auth Page| CA
+    CA -->|3. Capture Face| FS
+    FS -->|4. Store/Verify| DB
+    FS -->|5. Store Images| CS
+    AS -->|6. Issue Tokens| CA
+```
+
+## Authentication Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Client
+    participant OAuth
+    participant FaceAuth
+    participant DB
+
+    User->>Client: Initiate Login
+    Client->>OAuth: Authorization Request
+    OAuth->>User: Show Face Auth UI
+    User->>FaceAuth: Capture Face
+    FaceAuth->>DB: Verify Face
+    alt Face Matched
+        DB->>OAuth: Confirm Identity
+        OAuth->>Client: Auth Code
+        Client->>OAuth: Token Request
+        OAuth->>Client: Access + ID Token
+    else No Match
+        DB->>OAuth: Auth Failed
+        OAuth->>Client: Error Response
+    end
+```
+
+## Registration Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant OAuth
+    participant FaceAuth
+    participant DB
+    participant Storage
+
+    User->>OAuth: Start Registration
+    OAuth->>User: Show Registration Form
+    User->>OAuth: Submit User Details
+    OAuth->>User: Show Face Capture UI
+    User->>FaceAuth: Capture Face
+    FaceAuth->>Storage: Store Face Image
+    FaceAuth->>DB: Store Face Descriptors
+    DB->>OAuth: Confirm Registration
+    OAuth->>User: Registration Complete
+```
+
 ## Features
 
 - **OAuth 2.0 Authorization Code Flow**: Standard OAuth implementation with support for OpenID Connect
@@ -34,32 +104,68 @@ This project implements a custom OAuth 2.0 Authorization Server with facial reco
 - **face-api.js (client-side)**: Face detection in the browser
 - **HTML5 Canvas**: For capturing and processing face images
 
-## Architecture
+## Data Models
 
-### OAuth Server Components
+```mermaid
+erDiagram
+    User ||--o{ FaceProfile : has
+    User ||--o{ Token : issues
+    User ||--o{ AuthCode : generates
 
-1. **Authorization Endpoint** (`/oauth/authorize`)
-   - Initiates the OAuth flow
-   - Redirects to face authentication
+    User {
+        string _id
+        string firstName
+        string lastName
+        string email
+        string username
+        boolean emailVerified
+        date createdAt
+    }
 
-2. **Token Endpoint** (`/oauth/token`)
-   - Exchanges authorization codes for tokens
-   - Issues access tokens, ID tokens, and refresh tokens
+    FaceProfile {
+        string _id
+        string userId
+        array descriptors
+        string imageUrl
+        date createdAt
+    }
 
-3. **User Info Endpoint** (`/oauth/userinfo`)
-   - Returns authenticated user information
-   - Includes face verification status
+    Token {
+        string _id
+        string userId
+        string type
+        string value
+        date expiresAt
+    }
 
-4. **Face Authentication Flow**
-   - Face capture using browser camera
-   - Server-side face recognition and matching
-   - User registration with face enrollment
+    AuthCode {
+        string _id
+        string userId
+        string code
+        string redirectUri
+        array scope
+        date expiresAt
+    }
+```
 
-5. **Database Models**
-   - User: Stores user profile information
-   - FaceProfile: Stores face descriptors and image paths
-   - Token: Manages OAuth tokens
-   - AuthCode: Handles authorization codes
+## Security Features
+
+1. **Face Recognition Security**
+   - Multiple face descriptors stored for better matching
+   - Adjustable confidence threshold
+   - Liveness detection support
+   
+2. **OAuth Security**
+   - PKCE support for mobile apps
+   - Short-lived authorization codes
+   - Secure token storage
+   - HTTPS enforcement in production
+
+3. **Data Security**
+   - Encrypted face descriptors
+   - Secure image storage in Cloudinary
+   - JWT token encryption
+   - Session management
 
 ## Setup Instructions
 
@@ -72,19 +178,19 @@ This project implements a custom OAuth 2.0 Authorization Server with facial reco
 ### Installation
 
 1. Clone the repository
-   ```
+   ```bash
    git clone <repository-url>
    cd react-face-detection-main
    ```
 
 2. Install dependencies
-   ```
+   ```bash
    npm install
    ```
 
 3. Configure environment variables
-   Create a `.env` file in the root directory with the following variables:
-   ```
+   Create a `.env` file in the root directory with:
+   ```env
    # Server Configuration
    PORT=5001
    NODE_ENV=development
@@ -104,91 +210,48 @@ This project implements a custom OAuth 2.0 Authorization Server with facial reco
    ```
 
 4. Start the OAuth server
-   ```
+   ```bash
    node oauth-server.js
    ```
 
 5. Start the React frontend
-   ```
+   ```bash
    npm start
    ```
 
-## Usage
+## Integration Guide
 
 ### OAuth Client Integration
 
-To integrate with the OAuth server from a client application:
+1. Register your client application
+2. Configure OAuth endpoints:
+   - Authorization: `/oauth/authorize`
+   - Token: `/oauth/token`
+   - UserInfo: `/oauth/userinfo`
 
-1. Register your client application with the OAuth server
-2. Redirect users to the authorization endpoint:
-   ```
-   http://localhost:5001/oauth/authorize?client_id=face-auth-client&redirect_uri=http://localhost:3000/oauth/callback&response_type=code&scope=openid profile&state=random_state
-   ```
-
-3. Exchange the authorization code for tokens:
+3. Implement authorization flow:
    ```javascript
+   // Redirect to authorization
+   window.location.href = 'http://localhost:5001/oauth/authorize?' + 
+     'client_id=face-auth-client&' +
+     'redirect_uri=http://localhost:3000/callback&' +
+     'response_type=code&' +
+     'scope=openid profile&' +
+     'state=random_state';
+
+   // Exchange code for tokens
    const response = await fetch('http://localhost:5001/oauth/token', {
      method: 'POST',
-     headers: {
-       'Content-Type': 'application/json'
-     },
+     headers: { 'Content-Type': 'application/json' },
      body: JSON.stringify({
        grant_type: 'authorization_code',
        code: 'received_code',
-       redirect_uri: 'http://localhost:3000/oauth/callback',
+       redirect_uri: 'http://localhost:3000/callback',
        client_id: 'face-auth-client',
        client_secret: 'your_client_secret'
      })
    });
    ```
-
-4. Access user information with the token:
-   ```javascript
-   const userInfo = await fetch('http://localhost:5001/oauth/userinfo', {
-     headers: {
-       'Authorization': `Bearer ${access_token}`
-     }
-   });
-   ```
-
-### Face Authentication Flow
-
-1. User is redirected to the face authentication page
-2. New users can register by clicking "Register New Face"
-3. Existing users can authenticate by looking at the camera
-4. Upon successful authentication, the user is redirected back to the client application with an authorization code
-
-## OpenID Connect Integration
-
-The server supports OpenID Connect discovery at the standard endpoint:
-```
-/.well-known/openid-configuration
-```
-
-This provides all necessary endpoints and supported features for OIDC clients.
-
-## Security Considerations
-
-- Face descriptors are stored securely in the database
-- JWT tokens are signed with a secure secret
-- HTTPS is recommended for production deployments
-- Session management with secure cookies
-- Face matching threshold can be adjusted for security vs. convenience
-
-## Clerk SSO Integration
-
-This OAuth server can be integrated with Clerk as a custom OAuth provider:
-
-1. In your Clerk dashboard, add a new OAuth provider
-2. Configure the provider with the following settings:
-   - Authorization URL: `http://localhost:5001/oauth/authorize`
-   - Token URL: `http://localhost:5001/oauth/token`
-   - User Info URL: `http://localhost:5001/oauth/userinfo`
-   - Client ID: `face-auth-client`
-   - Client Secret: Your client secret
-   - Scopes: `openid profile`
-
-3. Add `https://your-clerk-domain.clerk.accounts.dev/v1/oauth_callback` to the allowed redirect URIs in your OAuth server configuration
 
 ## License
 

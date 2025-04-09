@@ -194,31 +194,92 @@ app.get('/oauth/authorize', (req, res) => {
     state: state || ''
   };
   
-  // In a real app, you would render a login page here
-  // For this demo, we'll render a simple HTML form that redirects to the face authentication endpoint
+  // Render a modern login page that matches the JewelTrack design
   res.send(`
     <html>
       <head>
-        <title>OAuth 2.0 Authorization</title>
+        <title>Face Authentication</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
-          body { font-family: Arial, sans-serif; margin: 40px; }
-          .container { max-width: 500px; margin: 0 auto; }
-          h1 { color: #333; }
+          body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px;
+            background-color: #fffbf0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+          }
+          .container { 
+            width: 100%;
+            max-width: 450px; 
+            margin: 0 auto; 
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+          }
+          .icon-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+          }
+          .dollar-icon {
+            background-color: #ffd54f;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #333;
+          }
+          h1 { 
+            color: #333; 
+            text-align: center;
+            margin-bottom: 5px;
+            font-size: 22px;
+            font-weight: 600;
+          }
+          .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 14px;
+          }
           .btn { 
-            display: inline-block; 
-            background: #4285f4; 
+            display: block;
+            background: #666;
             color: white; 
-            padding: 10px 20px; 
+            padding: 12px 24px; 
             text-decoration: none; 
-            border-radius: 5px; 
+            border-radius: 4px; 
             margin-top: 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+          }
+          .btn:hover {
+            background: #555;
+          }
+          @media (max-width: 480px) {
+            .container {
+              padding: 20px;
+            }
           }
         </style>
       </head>
       <body>
         <div class="container">
-          <h1>Face Authentication</h1>
-          <p>Authenticate using facial recognition to continue.</p>
+          <div class="icon-container">
+            <div class="dollar-icon">$</div>
+          </div>
+          <h1>JewelTrack Authentication</h1>
+          <p class="subtitle">Authenticate with facial recognition to continue</p>
           <a href="/face-auth?request=${Buffer.from(JSON.stringify(authRequest)).toString('base64')}" class="btn">Continue with Face Authentication</a>
         </div>
       </body>
@@ -236,43 +297,128 @@ app.get('/face-auth', (req, res) => {
   try {
     const authRequest = JSON.parse(Buffer.from(requestData, 'base64').toString());
     
-    // Render the face authentication page
+    // Render the face authentication page with modern JewelTrack design
     res.send(`
       <html>
         <head>
           <title>Face Authentication</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <style>
-            body { font-family: Arial, sans-serif; margin: 40px; }
-            .container { max-width: 600px; margin: 0 auto; text-align: center; }
-            h1 { color: #333; }
-            #video-container { margin: 20px 0; }
-            #video { border: 1px solid #ddd; border-radius: 5px; }
+            body { 
+              font-family: Arial, sans-serif; 
+              margin: 0; 
+              padding: 20px;
+              background-color: #fffbf0;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              min-height: 100vh;
+            }
+            .container { 
+              width: 100%;
+              max-width: 450px; 
+              margin: 0 auto; 
+              background-color: white;
+              padding: 30px;
+              border-radius: 12px;
+              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+              text-align: center;
+            }
+            .icon-container {
+              display: flex;
+              justify-content: center;
+              margin-bottom: 20px;
+            }
+            .dollar-icon {
+              background-color: #ffd54f;
+              width: 40px;
+              height: 40px;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 24px;
+              color: #333;
+            }
+            h1 { 
+              color: #333; 
+              text-align: center;
+              margin-bottom: 5px;
+              font-size: 22px;
+              font-weight: 600;
+            }
+            .subtitle {
+              text-align: center;
+              color: #666;
+              margin-bottom: 25px;
+              font-size: 14px;
+            }
+            #video-container { 
+              margin: 20px 0; 
+              border-radius: 8px;
+              overflow: hidden;
+              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+            #video { 
+              width: 100%;
+              max-width: 400px;
+              border-radius: 8px;
+              display: block;
+              margin: 0 auto;
+            }
             .btn { 
-              display: inline-block; 
-              background: #4285f4; 
+              background: #666; 
               color: white; 
-              padding: 10px 20px; 
+              padding: 12px 24px; 
               text-decoration: none; 
-              border-radius: 5px; 
+              border-radius: 4px; 
               margin-top: 20px;
               border: none;
               cursor: pointer;
+              font-size: 14px;
             }
-            .btn-register { background: #34a853; }
+            .btn:hover {
+              background: #555;
+            }
+            .btn-register { 
+              background: #34a853; 
+              margin-left: 10px;
+            }
+            .btn-register:hover {
+              background: #2d9348;
+            }
+            @media (max-width: 480px) {
+              .container {
+                padding: 20px;
+              }
+              .btn {
+                display: block;
+                width: 100%;
+                margin: 10px auto;
+              }
+              .btn-register {
+                margin-left: 0;
+              }
+            }
           </style>
         </head>
         <body>
           <div class="container">
+            <div class="icon-container">
+              <div class="dollar-icon">$</div>
+            </div>
             <h1>Face Authentication</h1>
-            <p>Please look at the camera to authenticate.</p>
+            <p class="subtitle">Please look at the camera to authenticate</p>
             
             <div id="video-container">
               <video id="video" width="400" height="300" autoplay></video>
               <canvas id="canvas" width="400" height="300" style="display:none;"></canvas>
             </div>
             
-            <button id="authenticate-btn" class="btn">Authenticate</button>
-            <button id="register-btn" class="btn btn-register">Register New Face</button>
+            <div>
+              <button id="authenticate-btn" class="btn">Authenticate</button>
+              <button id="register-btn" class="btn btn-register">Register New Face</button>
+            </div>
             
             <form id="auth-form" method="post" action="/face-auth/verify" style="display:none;">
               <input type="hidden" name="request" value="${requestData}">
@@ -281,6 +427,52 @@ app.get('/face-auth', (req, res) => {
             </form>
             
             <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+            <style>
+              /* Loading spinner styles */
+              .loading-container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                background-color: rgba(255, 255, 255, 0.9);
+                z-index: 10;
+                border-radius: 12px;
+              }
+              
+              .spinner {
+                width: 50px;
+                height: 50px;
+                border: 5px solid #f3f3f3;
+                border-top: 5px solid #ffd54f;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin-bottom: 15px;
+              }
+              
+              @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+              }
+              
+              .loading-text {
+                font-size: 16px;
+                color: #333;
+                text-align: center;
+                margin-top: 10px;
+              }
+              
+              .loading-progress {
+                font-size: 14px;
+                color: #666;
+                margin-top: 5px;
+              }
+            </style>
+            
             <script>
               const video = document.getElementById('video');
               const canvas = document.getElementById('canvas');
@@ -292,13 +484,59 @@ app.get('/face-auth', (req, res) => {
               
               let modelsLoaded = false;
               
+              // Create loading overlay
+              const loadingContainer = document.createElement('div');
+              loadingContainer.className = 'loading-container';
+              
+              const spinner = document.createElement('div');
+              spinner.className = 'spinner';
+              
+              const loadingText = document.createElement('div');
+              loadingText.className = 'loading-text';
+              loadingText.textContent = 'Loading face detection models...';
+              
+              const loadingProgress = document.createElement('div');
+              loadingProgress.className = 'loading-progress';
+              loadingProgress.textContent = 'Please wait a moment';
+              
+              loadingContainer.appendChild(spinner);
+              loadingContainer.appendChild(loadingText);
+              loadingContainer.appendChild(loadingProgress);
+              
+              // Add loading overlay to container
+              document.querySelector('.container').appendChild(loadingContainer);
+              
+              // Disable buttons while loading
+              authenticateBtn.disabled = true;
+              registerBtn.disabled = true;
+              
               // Load face-api.js models
               async function loadModels() {
                 const MODEL_URL = '/models';
-                await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-                await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
-                await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-                modelsLoaded = true;
+                try {
+                  loadingProgress.textContent = 'Loading face detector...';
+                  await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+                  
+                  loadingProgress.textContent = 'Loading facial landmarks...';
+                  await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+                  
+                  loadingProgress.textContent = 'Loading face recognition...';
+                  await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+                  
+                  modelsLoaded = true;
+                  
+                  // Remove loading overlay
+                  loadingContainer.style.display = 'none';
+                  
+                  // Enable buttons
+                  authenticateBtn.disabled = false;
+                  registerBtn.disabled = false;
+                } catch (error) {
+                  console.error('Error loading models:', error);
+                  loadingText.textContent = 'Error loading face detection models';
+                  loadingProgress.textContent = 'Please refresh the page and try again';
+                  loadingProgress.style.color = '#e53935';
+                }
               }
               
               // Start video stream
@@ -308,14 +546,17 @@ app.get('/face-auth', (req, res) => {
                   video.srcObject = stream;
                 } catch (err) {
                   console.error('Error accessing camera:', err);
-                  alert('Could not access the camera. Please ensure camera access is allowed.');
+                  loadingText.textContent = 'Camera access error';
+                  loadingProgress.textContent = 'Please ensure camera access is allowed and refresh the page';
+                  loadingProgress.style.color = '#e53935';
                 }
               }
               
               // Capture face image
               function captureFace(action) {
                 if (!modelsLoaded) {
-                  alert('Face detection models are still loading. Please wait.');
+                  // Show loading container again if models aren't loaded
+                  loadingContainer.style.display = 'flex';
                   return;
                 }
                 
@@ -364,8 +605,199 @@ app.get('/register', (req, res) => {
     return res.status(400).send('Invalid request');
   }
   
-  // Serve the registration form HTML
-  res.sendFile(path.join(__dirname, 'registration-form.html'));
+  // Render the registration form HTML inline
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Create Account</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 20px;
+          background-color: #fffbf0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+        }
+
+        .container {
+          width: 100%;
+          max-width: 450px;
+          margin: 0 auto;
+          background-color: white;
+          padding: 30px;
+          border-radius: 12px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .icon-container {
+          display: flex;
+          justify-content: center;
+          margin-bottom: 20px;
+        }
+
+        .dollar-icon {
+          background-color: #ffd54f;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 24px;
+          color: #333;
+        }
+
+        h1 {
+          color: #333;
+          text-align: center;
+          margin-bottom: 5px;
+          font-size: 22px;
+          font-weight: 600;
+        }
+
+        .subtitle {
+          text-align: center;
+          color: #666;
+          margin-bottom: 25px;
+          font-size: 14px;
+        }
+
+        .form-row {
+          display: flex;
+          gap: 15px;
+          margin-bottom: 15px;
+        }
+
+        .form-group {
+          margin-bottom: 15px;
+          flex: 1;
+        }
+
+        label {
+          display: block;
+          margin-bottom: 6px;
+          font-weight: 500;
+          color: #333;
+          font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"] {
+          width: 100%;
+          padding: 10px;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          font-size: 14px;
+          box-sizing: border-box;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus {
+          outline: none;
+          border-color: #4285f4;
+        }
+
+        .btn {
+          display: block;
+          width: 100%;
+          background: #666;
+          color: white;
+          padding: 12px 24px;
+          text-decoration: none;
+          border-radius: 4px;
+          margin-top: 20px;
+          border: none;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 500;
+          text-align: center;
+        }
+
+        .btn:hover {
+          background: #555;
+        }
+
+        @media (max-width: 480px) {
+          .form-row {
+            flex-direction: column;
+            gap: 0;
+          }
+
+          .container {
+            padding: 20px;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="icon-container">
+          <div class="dollar-icon">$</div>
+        </div>
+
+        <h1>Create Account</h1>
+        <p class="subtitle">Enter your details to get started</p>
+
+        <form id="registration-form" method="post" action="/register-user">
+          <input type="hidden" name="request" id="request-data" value="${requestData}">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="firstName">First Name</label>
+              <input type="text" id="firstName" name="firstName" placeholder="John" required>
+            </div>
+
+            <div class="form-group">
+              <label for="lastName">Last Name</label>
+              <input type="text" id="lastName" name="lastName" placeholder="Doe" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="john@example.com" required>
+          </div>
+
+          <div class="form-group">
+            <label for="username">Username (optional)</label>
+            <input type="text" id="username" name="username">
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Phone Number (optional)</label>
+            <input type="tel" id="phone" name="phone" placeholder="+1 (555) 123-4567">
+          </div>
+
+          <button type="submit" class="btn">Create account</button>
+        </form>
+      </div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          // Form validation
+          document.getElementById('registration-form').addEventListener('submit', function (e) {
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('email').value.trim();
+
+            if (!firstName || !lastName || !email) {
+              e.preventDefault();
+              alert('Please fill in all required fields.');
+            }
+          });
+        });
+      </script>
+    </body>
+    </html>
+  `);
 });
 
 // Handle Registration Form Submission
@@ -393,29 +825,100 @@ app.post('/register-user', bodyParser.urlencoded({ extended: true }), async (req
       <html>
         <head>
           <title>Face Capture</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <style>
-            body { font-family: Arial, sans-serif; margin: 40px; }
-            .container { max-width: 600px; margin: 0 auto; text-align: center; }
-            h1 { color: #333; }
-            #video-container { margin: 20px 0; }
-            #video { border: 1px solid #ddd; border-radius: 5px; }
+            body { 
+              font-family: Arial, sans-serif; 
+              margin: 0; 
+              padding: 20px;
+              background-color: #fffbf0;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              min-height: 100vh;
+            }
+            .container { 
+              width: 100%;
+              max-width: 450px; 
+              margin: 0 auto; 
+              background-color: white;
+              padding: 30px;
+              border-radius: 12px;
+              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+              text-align: center;
+            }
+            .icon-container {
+              display: flex;
+              justify-content: center;
+              margin-bottom: 20px;
+            }
+            .dollar-icon {
+              background-color: #ffd54f;
+              width: 40px;
+              height: 40px;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 24px;
+              color: #333;
+            }
+            h1 { 
+              color: #333; 
+              text-align: center;
+              margin-bottom: 5px;
+              font-size: 22px;
+              font-weight: 600;
+            }
+            .subtitle {
+              text-align: center;
+              color: #666;
+              margin-bottom: 25px;
+              font-size: 14px;
+            }
+            #video-container { 
+              margin: 20px 0; 
+              border-radius: 8px;
+              overflow: hidden;
+              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+            #video { 
+              width: 100%;
+              max-width: 400px;
+              border-radius: 8px;
+              display: block;
+              margin: 0 auto;
+            }
             .btn { 
-              display: inline-block; 
-              background: #4285f4; 
+              display: block; 
+              background: #666; 
               color: white; 
-              padding: 10px 20px; 
+              padding: 12px 24px; 
               text-decoration: none; 
-              border-radius: 5px; 
+              border-radius: 4px; 
               margin-top: 20px;
               border: none;
               cursor: pointer;
+              font-size: 14px;
+              font-weight: 500;
+            }
+            .btn:hover {
+              background: #555;
+            }
+            @media (max-width: 480px) {
+              .container {
+                padding: 20px;
+              }
             }
           </style>
         </head>
         <body>
           <div class="container">
+            <div class="icon-container">
+              <div class="dollar-icon">$</div>
+            </div>
             <h1>Face Registration</h1>
-            <p>Please look at the camera to register your face.</p>
+            <p class="subtitle">Please look at the camera to register your face</p>
             
             <div id="video-container">
               <video id="video" width="400" height="300" autoplay></video>
@@ -519,65 +1022,103 @@ app.post('/face-auth/verify', bodyParser.urlencoded({ extended: true }), async (
     const faceDescriptor = await faceRecognition.extractFaceDescriptor(imageBuffer);
     
     if (!faceDescriptor) {
-      // Instead of just sending a text response, serve the error page
+      // Instead of just sending a text response, serve the error page with JewelTrack design
       return res.status(400).send(`
     <html>
       <head>
         <title>Face Authentication Error</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
           body { 
             font-family: Arial, sans-serif; 
-            margin: 40px; 
-            background: #f8f9fa;
+            margin: 0; 
+            padding: 20px;
+            background-color: #fffbf0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
           }
           .face-auth-error-container {
-            max-width: 600px;
-            margin: 0 auto;
+            width: 100%;
+            max-width: 450px; 
+            margin: 0 auto; 
+            background-color: white;
             padding: 30px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-          }
-          .face-auth-error-icon {
-            font-size: 48px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             text-align: center;
+          }
+          .icon-container {
+            display: flex;
+            justify-content: center;
             margin-bottom: 20px;
           }
+          .dollar-icon {
+            background-color: #ffd54f;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #333;
+          }
           h2 {
-            color: #dc3545;
+            color: #333;
             margin-bottom: 15px;
+            font-size: 22px;
+            font-weight: 600;
+          }
+          .subtitle {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 14px;
           }
           .face-auth-error-tips {
             padding-left: 20px;
-            color: #6c757d;
+            color: #666;
+            text-align: left;
+            margin: 20px 0;
+          }
+          .face-auth-error-tips li {
+            margin-bottom: 8px;
           }
           .face-auth-retry-button {
             display: block;
             width: 100%;
             padding: 12px;
-            background: #dc3545;
+            background: #666;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
             margin-top: 25px;
+            font-size: 14px;
+            font-weight: 500;
           }
-          @media (max-width: 768px) {
-            body { margin: 20px; }
+          .face-auth-retry-button:hover {
+            background: #555;
+          }
+          @media (max-width: 480px) {
             .face-auth-error-container { padding: 20px; }
           }
         </style>
       </head>
       <body>
         <div class="face-auth-error-container">
-          <div class="face-auth-error-icon">😕</div>
+          <div class="icon-container">
+            <div class="dollar-icon">$</div>
+          </div>
           <h2>Face Verification Failed</h2>
-          <p>We couldn't verify your identity. Please ensure:</p>
+          <p class="subtitle">We couldn't verify your identity. Please ensure:</p>
           
           <ul class="face-auth-error-tips">
             <li>Your face is clearly visible and well-lit</li>
             <li>You're not wearing sunglasses or face coverings</li>
             <li>You're facing the camera directly</li>
+            <li>You're at an appropriate distance from the camera</li>
           </ul>
           
           <button class="face-auth-retry-button" onclick="window.history.back()">Try Again</button>

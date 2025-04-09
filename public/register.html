@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -60,48 +59,6 @@
       font-size: 14px;
     }
 
-    .google-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      background: white;
-      cursor: pointer;
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
-
-    .google-icon {
-      margin-right: 10px;
-    }
-
-    .divider {
-      display: flex;
-      align-items: center;
-      text-align: center;
-      margin: 20px 0;
-      color: #666;
-      font-size: 14px;
-    }
-
-    .divider::before,
-    .divider::after {
-      content: '';
-      flex: 1;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .divider::before {
-      margin-right: 10px;
-    }
-
-    .divider::after {
-      margin-left: 10px;
-    }
-
     .form-row {
       display: flex;
       gap: 15px;
@@ -123,8 +80,7 @@
 
     input[type="text"],
     input[type="email"],
-    input[type="tel"],
-    input[type="password"] {
+    input[type="tel"] {
       width: 100%;
       padding: 10px;
       border: 1px solid #ddd;
@@ -135,44 +91,9 @@
 
     input[type="text"]:focus,
     input[type="email"]:focus,
-    input[type="tel"]:focus,
-    input[type="password"]:focus {
+    input[type="tel"]:focus {
       outline: none;
       border-color: #4285f4;
-    }
-
-    .password-field {
-      position: relative;
-    }
-
-    .password-toggle {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-      color: #666;
-    }
-
-    .checkbox-container {
-      display: flex;
-      align-items: center;
-      margin: 15px 0;
-    }
-
-    .checkbox-container input {
-      margin-right: 10px;
-    }
-
-    .checkbox-container label {
-      margin-bottom: 0;
-      font-size: 14px;
-      color: #333;
-    }
-
-    .terms-link {
-      color: #4285f4;
-      text-decoration: none;
     }
 
     .btn {
@@ -195,22 +116,6 @@
       background: #555;
     }
 
-    .login-link {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 14px;
-      color: #666;
-    }
-
-    .login-link a {
-      color: #4285f4;
-      text-decoration: none;
-    }
-
-    .required {
-      color: #e53935;
-    }
-
     @media (max-width: 480px) {
       .form-row {
         flex-direction: column;
@@ -223,13 +128,13 @@
     }
   </style>
 </head>
-
 <body>
   <div class="container">
     <div class="icon-container">
       <div class="dollar-icon">$</div>
     </div>
 
+    <h1>Create Account</h1>
     <p class="subtitle">Enter your details to get started</p>
 
     <form id="registration-form" method="post" action="/register-user">
@@ -263,23 +168,16 @@
       </div>
 
       <button type="submit" class="btn">Create account</button>
-
-
     </form>
   </div>
 
   <script>
+    // Get request data from URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const requestData = urlParams.get('request');
+    document.getElementById('request-data').value = requestData;
+    
     document.addEventListener('DOMContentLoaded', function () {
-      // Get request data from URL
-      const urlParams = new URLSearchParams(window.location.search);
-      const requestData = urlParams.get('request');
-
-      if (requestData) {
-        document.getElementById('request-data').value = requestData;
-      } else {
-        alert('Missing request data. Please try again.');
-      }
-
       // Form validation
       document.getElementById('registration-form').addEventListener('submit', function (e) {
         const firstName = document.getElementById('firstName').value.trim();
@@ -291,22 +189,7 @@
           alert('Please fill in all required fields.');
         }
       });
-
-      // Password visibility toggle
-      const passwordField = document.getElementById('password');
-      const passwordToggle = document.querySelector('.password-toggle');
-
-      passwordToggle.addEventListener('click', function () {
-        if (passwordField.type === 'password') {
-          passwordField.type = 'text';
-          passwordToggle.textContent = '🔒';
-        } else {
-          passwordField.type = 'password';
-          passwordToggle.textContent = '👁️';
-        }
-      });
     });
   </script>
 </body>
-
 </html>

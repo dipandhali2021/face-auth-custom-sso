@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Face Authentication Error</title>
+    <title>Face Authentication</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
       body { 
@@ -14,7 +14,7 @@
         align-items: center;
         min-height: 100vh;
       }
-      .face-auth-error-container {
+      .container { 
         width: 100%;
         max-width: 450px; 
         margin: 0 auto; 
@@ -22,7 +22,6 @@
         padding: 30px;
         border-radius: 12px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        text-align: center;
       }
       .icon-container {
         display: flex;
@@ -40,63 +39,51 @@
         font-size: 24px;
         color: #333;
       }
-      h2 {
-        color: #333;
-        margin-bottom: 15px;
+      h1 { 
+        color: #333; 
+        text-align: center;
+        margin-bottom: 5px;
         font-size: 22px;
         font-weight: 600;
       }
       .subtitle {
+        text-align: center;
         color: #666;
         margin-bottom: 25px;
         font-size: 14px;
       }
-      .face-auth-error-tips {
-        padding-left: 20px;
-        color: #666;
-        text-align: left;
-        margin: 20px 0;
-      }
-      .face-auth-error-tips li {
-        margin-bottom: 8px;
-      }
-      .face-auth-retry-button {
+      .btn { 
         display: block;
-        width: 100%;
-        padding: 12px;
         background: #666;
-        color: white;
+        color: white; 
+        padding: 12px 24px; 
+        text-decoration: none; 
+        border-radius: 4px; 
+        margin-top: 20px;
         border: none;
-        border-radius: 4px;
         cursor: pointer;
-        margin-top: 25px;
         font-size: 14px;
         font-weight: 500;
+        text-align: center;
       }
-      .face-auth-retry-button:hover {
+      .btn:hover {
         background: #555;
       }
       @media (max-width: 480px) {
-        .face-auth-error-container { padding: 20px; }
+        .container {
+          padding: 20px;
+        }
       }
     </style>
   </head>
   <body>
-    <div class="face-auth-error-container">
+    <div class="container">
       <div class="icon-container">
         <div class="dollar-icon">$</div>
       </div>
-      <h2>Face Verification Failed</h2>
-      <p class="subtitle">We couldn't verify your identity. Please ensure:</p>
-      
-      <ul class="face-auth-error-tips">
-        <li>Your face is clearly visible and well-lit</li>
-        <li>You're not wearing sunglasses or face coverings</li>
-        <li>You're facing the camera directly</li>
-        <li>You're at an appropriate distance from the camera</li>
-      </ul>
-      
-      <button class="face-auth-retry-button" onclick="window.history.back()">Try Again</button>
+      <h1>JewelTrack Authentication</h1>
+      <p class="subtitle">Authenticate with facial recognition to continue</p>
+      <a href="/face-auth?request={{requestData}}" class="btn">Continue with Face Authentication</a>
     </div>
   </body>
 </html>

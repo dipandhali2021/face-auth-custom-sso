@@ -24,7 +24,7 @@ const clients = {
   'face-auth-client': {
     clientId: 'face-auth-client',
     clientSecret: '2f4faadac82f1b78aec68aea3de330303f3aa90531222f35e656943e581aa118',
-    redirectUris: ['http://localhost:5000/oauth/callback', 'http://localhost:3000/oauth/callback', 'https://dapi.clerk.com/v1/oauth_debug/callback', 'https://143gdh0g-5000.inc1.devtunnels.ms/oauth/callback', 'https://capable-boar-92.clerk.accounts.dev/v1/oauth_callback'],
+    redirectUris: ['http://localhost:5000/oauth/callback', 'https://dapi.clerk.com/v1/oauth_debug/callback', 'https://143gdh0g-5000.inc1.devtunnels.ms/oauth/callback', 'https://capable-boar-92.clerk.accounts.dev/v1/oauth_callback'],
     grants: ['authorization_code'],
     scopes: ['openid', 'profile']
   }
@@ -57,7 +57,7 @@ app.use(cookieParser());
 
 // Session middleware for maintaining login state
 app.use(session({
-  secret: process.env.SESSION_SECRET || '2300eb7c4df9f46422bd8ad47fc08aeb53e9c96fd65e99d3f327af7537bccc27',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 } // 24 hours
@@ -94,14 +94,14 @@ function generateRandomString(length = 32) {
 }
 
 function generateJWT(payload, expiresIn = '1h') {
-  const secret = process.env.SESSION_SECRET || '2300eb7c4df9f46422bd8ad47fc08aeb53e9c96fd65e99d3f327af7537bccc27';
+  const secret = process.env.SESSION_SECRET;
   // Check if payload already has an 'exp' property to avoid conflict with expiresIn option
   const options = payload.exp ? {} : { expiresIn };
   return jwt.sign(payload, secret, options);
 }
 
 function verifyJWT(token) {
-  const secret = process.env.SESSION_SECRET || '2300eb7c4df9f46422bd8ad47fc08aeb53e9c96fd65e99d3f327af7537bccc27';
+  const secret = process.env.SESSION_SECRET;
   try {
     return jwt.verify(token, secret);
   } catch (error) {

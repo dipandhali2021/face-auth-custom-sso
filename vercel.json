@@ -1,0 +1,48 @@
+{
+  "version": 2,
+  "buildCommand": "npm install",
+  "builds": [
+    {
+      "src": "oauth-server.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/models/(.*)",
+      "dest": "/public/models/$1"
+    },
+    {
+      "src": "/uploads/(.*)",
+      "dest": "/uploads/$1"
+    },
+    {
+      "src": "/(.*\\.(html|css|js|ico|png|json))",
+      "dest": "/public/$1"
+    },
+    {
+      "src": "/oauth/(.*)",
+      "dest": "/oauth-server.js"
+    },
+    {
+      "src": "/face-auth/(.*)",
+      "dest": "/oauth-server.js"
+    },
+    {
+      "src": "/register(.*)",
+      "dest": "/oauth-server.js" 
+    },
+    {
+      "src": "/upload",
+      "dest": "/oauth-server.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/oauth-server.js"
+    }
+  ]
+}

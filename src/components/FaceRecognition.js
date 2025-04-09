@@ -4,6 +4,7 @@ import './FaceRecognition.css';
 
 const FaceRecognition = ({ videoRef, handleVideoOnPlay, detections }) => {
   const [capturedImages, setCapturedImages] = useState([]);
+  const [noFaceDetected, setNoFaceDetected] = useState(false);
 
   useEffect(() => {
     const startVideo = () => {
@@ -55,8 +56,9 @@ const FaceRecognition = ({ videoRef, handleVideoOnPlay, detections }) => {
       const context = canvas.getContext('2d');
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      // Draw detections and expressions on the canvas
+      // Check if faces are detected
       if (detections.length > 0) {
+        setNoFaceDetected(false);
         const resizedDetections = faceapi.resizeResults(detections, {
           width: canvas.width,
           height: canvas.height,
@@ -64,6 +66,8 @@ const FaceRecognition = ({ videoRef, handleVideoOnPlay, detections }) => {
         faceapi.draw.drawDetections(canvas, resizedDetections);
         faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
         faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
+      } else {
+        setNoFaceDetected(true);
       }
 
       const dataUrl = canvas.toDataURL('image/jpeg');
@@ -114,6 +118,21 @@ const FaceRecognition = ({ videoRef, handleVideoOnPlay, detections }) => {
       <button onClick={captureImage} className="capture-button">
         Capture Image
       </button>
+      
+      {noFaceDetected && (
+        <div className="no-face-detected">
+          <div className="no-face-icon">😕</div>
+          <h3>No face detected in the image</h3>
+          <p>Please try again with a clearer image or better lighting conditions.</p>
+          <ul className="face-detection-tips">
+            <li>Make sure your face is clearly visible</li>
+            <li>Ensure good lighting on your face</li>
+            <li>Position yourself directly in front of the camera</li>
+            <li>Remove any face coverings or obstructions</li>
+          </ul>
+        </div>
+      )}
+      
       <div className="captured-images-container">
         {capturedImages.map((image, index) => (
           <img

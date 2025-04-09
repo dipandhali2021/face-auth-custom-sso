@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Face Authentication Error</title>
+  <link rel="stylesheet" href="./face-auth-error.css">
+</head>
+<body>
+  <div class="face-auth-error-container">
+    <div class="face-auth-error-icon">😕</div>
+    <h2>No face detected in the image</h2>
+    <p>We couldn't detect a face in the image you provided. Please try again with a clearer image or better lighting conditions.</p>
+    
+    <ul class="face-auth-error-tips">
+      <li>Make sure your face is clearly visible in the camera</li>
+      <li>Ensure good lighting on your face (avoid backlighting)</li>
+      <li>Position yourself directly in front of the camera</li>
+      <li>Remove any face coverings or obstructions</li>
+      <li>Adjust your distance from the camera (not too close or too far)</li>
+    </ul>
+    
+    <button class="face-auth-retry-button" onclick="window.history.back()">Try Again</button>
+  </div>
+</body>
+</html>

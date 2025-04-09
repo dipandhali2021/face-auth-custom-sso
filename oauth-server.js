@@ -35,7 +35,7 @@ const app = express();
 
 // Parse command line arguments for port
 const args = process.argv.slice(2);
-let PORT = process.env.PORT || 5000;
+let PORT = 5001;
 
 for (let i = 0; i < args.length; i++) {
   if (args[i] === '--port' && i + 1 < args.length) {
@@ -519,7 +519,72 @@ app.post('/face-auth/verify', bodyParser.urlencoded({ extended: true }), async (
     const faceDescriptor = await faceRecognition.extractFaceDescriptor(imageBuffer);
     
     if (!faceDescriptor) {
-      return res.status(400).send('No face detected in the image. Please try again with a clearer image.');
+      // Instead of just sending a text response, serve the error page
+      return res.status(400).send(`
+    <html>
+      <head>
+        <title>Face Authentication Error</title>
+        <style>
+          body { 
+            font-family: Arial, sans-serif; 
+            margin: 40px; 
+            background: #f8f9fa;
+          }
+          .face-auth-error-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+          }
+          .face-auth-error-icon {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 20px;
+          }
+          h2 {
+            color: #dc3545;
+            margin-bottom: 15px;
+          }
+          .face-auth-error-tips {
+            padding-left: 20px;
+            color: #6c757d;
+          }
+          .face-auth-retry-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 25px;
+          }
+          @media (max-width: 768px) {
+            body { margin: 20px; }
+            .face-auth-error-container { padding: 20px; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="face-auth-error-container">
+          <div class="face-auth-error-icon">😕</div>
+          <h2>Face Verification Failed</h2>
+          <p>We couldn't verify your identity. Please ensure:</p>
+          
+          <ul class="face-auth-error-tips">
+            <li>Your face is clearly visible and well-lit</li>
+            <li>You're not wearing sunglasses or face coverings</li>
+            <li>You're facing the camera directly</li>
+          </ul>
+          
+          <button class="face-auth-retry-button" onclick="window.history.back()">Try Again</button>
+        </div>
+      </body>
+    </html>
+  `);
     }
     
     let userId;

@@ -5,7 +5,7 @@ const { Schema } = mongoose;
 // Connect to MongoDB
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect('mongodb+srv://dipandhali2021:8240054421@cluster0.biu4xlo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+    const conn = await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       dbName:'face-auth-db',

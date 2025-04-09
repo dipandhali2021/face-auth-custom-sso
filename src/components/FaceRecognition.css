@@ -49,6 +49,44 @@
     background-color: #0056b3;
   }
   
+  /* No face detected message styling */
+  .no-face-detected {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 600px;
+    width: 100%;
+  }
+  
+  .no-face-icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+  }
+  
+  .no-face-detected h3 {
+    color: #dc3545;
+    margin-bottom: 10px;
+  }
+  
+  .no-face-detected p {
+    margin-bottom: 15px;
+    color: #6c757d;
+  }
+  
+  .face-detection-tips {
+    text-align: left;
+    padding-left: 20px;
+    margin-top: 10px;
+  }
+  
+  .face-detection-tips li {
+    margin-bottom: 8px;
+    color: #495057;
+  }
+
   /* Responsive adjustments */
   @media (max-width: 768px) {
     .face-recognition-container {
@@ -63,6 +101,15 @@
       width: 100%;
       font-size: 14px;
       padding: 10px;
+    }
+
+    .no-face-detected {
+      padding: 15px;
+      margin-top: 15px;
+    }
+
+    .no-face-icon {
+      font-size: 36px;
     }
   }
   

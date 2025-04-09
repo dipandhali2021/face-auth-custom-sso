@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import * as faceapi from 'face-api.js';
 import FaceRecognition from './components/FaceRecognition';
-import OAuthClient from './components/OAuthClient';
+import OAuthClient from './components/oauthclient';
 import './App.css';
 
 function App() {

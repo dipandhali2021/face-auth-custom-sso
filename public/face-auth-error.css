@@ -1,0 +1,83 @@
+/* Styling for face authentication error page */
+.face-auth-error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  margin: 20px auto;
+  max-width: 600px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.face-auth-error-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  color: #dc3545;
+}
+
+.face-auth-error-container h2 {
+  color: #dc3545;
+  margin-bottom: 15px;
+  font-size: 24px;
+}
+
+.face-auth-error-container p {
+  margin-bottom: 20px;
+  color: #6c757d;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.face-auth-error-tips {
+  text-align: left;
+  padding-left: 20px;
+  margin: 15px 0;
+  width: 100%;
+  max-width: 500px;
+}
+
+.face-auth-error-tips li {
+  margin-bottom: 10px;
+  color: #495057;
+}
+
+.face-auth-retry-button {
+  margin-top: 20px;
+  padding: 12px 24px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.face-auth-retry-button:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .face-auth-error-container {
+    padding: 20px;
+    margin: 10px;
+  }
+  
+  .face-auth-error-icon {
+    font-size: 48px;
+  }
+  
+  .face-auth-error-container h2 {
+    font-size: 20px;
+  }
+  
+  .face-auth-retry-button {
+    width: 100%;
+    padding: 10px;
+  }
+}

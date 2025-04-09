@@ -5,7 +5,7 @@ const { Schema } = mongoose;
 // Connect to MongoDB
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect('REDACTED_MONGODB_URI {
+    const conn = await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       dbName:'face-auth-db',

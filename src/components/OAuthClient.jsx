@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import './oauthclient.css';
+import './OAuthClient.css';
 
 const OAuthClient = () => {
   const [searchParams] = useSearchParams();
@@ -79,6 +79,24 @@ const OAuthClient = () => {
       // Clear the stored state since we've used it
       localStorage.removeItem('oauth_state');
       
+      // Get the current origin for dynamic redirect URI construction
+      const origin = window.location.origin;
+      const redirectUri = `${origin}/oauth/callback`;
+      
+      // Log the current URL to debug the redirect issue
+      console.log('Current URL during token exchange:', window.location.href);
+      
+      // Log the code and redirect URI being used for token exchange
+      console.log('Using redirect URI for token exchange:', redirectUri);
+      
+      // Add more detailed debugging for request parameters
+      console.log('Full token exchange request details:', {
+        url: 'http://localhost:5001/oauth/token',
+        code: code,
+        redirect_uri: redirectUri,
+        client_id: 'face-auth-client'
+      });
+      
       const response = await fetch('http://localhost:5001/oauth/token', {
         method: 'POST',
         headers: {
@@ -87,19 +105,29 @@ const OAuthClient = () => {
         body: JSON.stringify({
           grant_type: 'authorization_code',
           code,
-          redirect_uri: 'http://localhost:5000/oauth/callback',
+          redirect_uri: redirectUri,
           client_id: 'face-auth-client',
           client_secret: '2f4faadac82f1b78aec68aea3de330303f3aa90531222f35e656943e581aa118'
         })
       });
+      
+      console.log('Token response status:', response.status);
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.error_description || errorData.error || 'Failed to exchange code for token';
+        const errorData = await response.json().catch(() => ({
+          error: 'Failed to parse error response',
+          status: response.status,
+          statusText: response.statusText
+        }));
+        console.error('Token exchange failed:', errorData);
+        const errorMessage = errorData.error_description || errorData.error || `Failed to exchange code for token (Status: ${response.status})`;
         throw new Error(errorMessage);
       }
+      
+      console.log('Token exchange successful');
 
       const data = await response.json();
+      console.log('Token data received (keys only):', Object.keys(data));
       
       // Store tokens in localStorage (in a real app, use a more secure method)
       localStorage.setItem('access_token', data.access_token);
@@ -123,26 +151,40 @@ const OAuthClient = () => {
   // Fetch user information from the userinfo endpoint
   const fetchUserInfo = async (accessToken) => {
     try {
+      console.log('Fetching user info with token:', accessToken ? 'Token exists' : 'No token');
+      
       const response = await fetch('http://localhost:5001/oauth/userinfo', {
         headers: {
           'Authorization': `Bearer ${accessToken}`
         }
       });
+      
+      console.log('User info response status:', response.status);
 
       if (!response.ok) {
         // If token is invalid, clear it from storage
         if (response.status === 401) {
+          console.log('Unauthorized access, clearing tokens');
           localStorage.removeItem('access_token');
           localStorage.removeItem('id_token');
           localStorage.removeItem('refresh_token');
           localStorage.removeItem('oauth_state');
           localStorage.removeItem('oauth_nonce');
         }
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error_description || 'Failed to fetch user info');
+        const errorData = await response.json().catch(() => ({
+          error: 'Failed to parse error response',
+          status: response.status,
+          statusText: response.statusText
+        }));
+        console.error('User info fetch failed:', errorData);
+        throw new Error(errorData.error_description || errorData.error || `Failed to fetch user info (Status: ${response.status})`);
       }
 
       const userData = await response.json();
+      console.log('User data received:', userData ? 'Data exists' : 'No data');
+      if (userData) {
+        console.log('User data keys:', Object.keys(userData));
+      }
       
       setAuthState({
         isAuthenticated: true,
@@ -151,9 +193,7 @@ const OAuthClient = () => {
         error: null
       });
 
-      // In a real app, you would integrate with Clerk here
-      // For example, using Clerk's signIn or signUp methods with the OAuth data
-      return userData; // Return user data for the session check
+      return userData;
     } catch (error) {
       console.error('User info fetch error:', error);
       setAuthState(prev => ({
@@ -161,7 +201,7 @@ const OAuthClient = () => {
         loading: false,
         error: error.message
       }));
-      throw error; // Re-throw to handle in the caller
+      throw error;
     }
   };
 
@@ -175,10 +215,15 @@ const OAuthClient = () => {
     const nonce = Math.random().toString(36).substring(2, 15);
     localStorage.setItem('oauth_nonce', nonce);
     
+    // Get the current origin for dynamic redirect URI construction
+    const origin = window.location.origin;
+    const redirectUri = `${origin}/oauth/callback`;
+    console.log('Using redirect URI for authorization:', redirectUri);
+    
     // Redirect to authorization endpoint
     const authUrl = new URL('http://localhost:5001/oauth/authorize');
     authUrl.searchParams.append('client_id', 'face-auth-client');
-    authUrl.searchParams.append('redirect_uri', 'http://localhost:5000/oauth/callback');
+    authUrl.searchParams.append('redirect_uri', redirectUri);
     authUrl.searchParams.append('response_type', 'code');
     authUrl.searchParams.append('scope', 'openid profile email');
     authUrl.searchParams.append('state', state);
@@ -213,7 +258,7 @@ const OAuthClient = () => {
     
     // Redirect to OIDC logout endpoint
     const logoutUrl = new URL('http://localhost:5001/oauth/logout');
-    logoutUrl.searchParams.append('post_logout_redirect_uri', 'http://localhost:5000');
+    logoutUrl.searchParams.append('post_logout_redirect_uri', 'http://localhost:5173');
     if (idToken) {
       logoutUrl.searchParams.append('id_token_hint', idToken);
     }

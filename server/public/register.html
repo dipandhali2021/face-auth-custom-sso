@@ -79,8 +79,7 @@
     }
 
     input[type="text"],
-    input[type="email"],
-    input[type="tel"] {
+    input[type="email"] {
       width: 100%;
       padding: 10px;
       border: 1px solid #ddd;
@@ -90,8 +89,7 @@
     }
 
     input[type="text"]:focus,
-    input[type="email"]:focus,
-    input[type="tel"]:focus {
+    input[type="email"]:focus {
       outline: none;
       border-color: #4285f4;
     }
@@ -130,10 +128,7 @@
 </head>
 <body>
   <div class="container">
-    <div class="icon-container">
-      <div class="dollar-icon">$</div>
-    </div>
-
+    
     <h1>Create Account</h1>
     <p class="subtitle">Enter your details to get started</p>
 
@@ -157,16 +152,6 @@
         <input type="email" id="email" name="email" placeholder="john@example.com" required>
       </div>
 
-      <div class="form-group">
-        <label for="username">Username (optional)</label>
-        <input type="text" id="username" name="username">
-      </div>
-
-      <div class="form-group">
-        <label for="phone">Phone Number (optional)</label>
-        <input type="tel" id="phone" name="phone" placeholder="+1 (555) 123-4567">
-      </div>
-
       <button type="submit" class="btn">Create account</button>
     </form>
   </div>
@@ -178,7 +163,7 @@
     document.getElementById('request-data').value = requestData;
     
     document.addEventListener('DOMContentLoaded', function () {
-      // Form validation
+      // Form validation and custom submission handling
       document.getElementById('registration-form').addEventListener('submit', function (e) {
         const firstName = document.getElementById('firstName').value.trim();
         const lastName = document.getElementById('lastName').value.trim();
@@ -187,7 +172,21 @@
         if (!firstName || !lastName || !email) {
           e.preventDefault();
           alert('Please fill in all required fields.');
+          return;
         }
+        
+        // Instead of submitting directly to server, redirect to face-capture with user details
+        e.preventDefault();
+        
+        // Build URL with all user details
+        const faceCaptureUrl = new URL('/face-capture.html', window.location.origin);
+        faceCaptureUrl.searchParams.append('request', requestData);
+        faceCaptureUrl.searchParams.append('firstName', firstName);
+        faceCaptureUrl.searchParams.append('lastName', lastName);
+        faceCaptureUrl.searchParams.append('email', email);
+        
+        // Redirect to face capture page
+        window.location.href = faceCaptureUrl.toString();
       });
     });
   </script>

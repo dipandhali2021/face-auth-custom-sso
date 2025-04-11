@@ -56,42 +56,9 @@
   }
 }
 
-.App {
-  text-align: center;
-  margin-top: 20px;
-}
-
 video {
   border: 2px solid #000;
   border-radius: 10px;
-}
-
-.toggle-container {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-bottom: 30px;
-}
-
-.toggle-btn {
-  padding: 10px 20px;
-  font-size: 16px;
-  border: 2px solid #007bff;
-  background-color: white;
-  color: #007bff;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.toggle-btn:hover {
-  background-color: #007bff;
-  color: white;
-}
-
-.toggle-btn.active {
-  background-color: #007bff;
-  color: white;
 }
 
 .toggle-container {

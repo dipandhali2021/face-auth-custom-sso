@@ -1,9 +1,8 @@
-// src/App.js
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import * as faceapi from 'face-api.js';
 import FaceRecognition from './components/FaceRecognition';
-import OAuthClient from './components/oauthclient';
+import OAuthClient from './components/OAuthClient';
 import './App.css';
 
 function App() {
@@ -11,18 +10,28 @@ function App() {
   const [modelsLoaded, setModelsLoaded] = useState(false);
   const [detections, setDetections] = useState([]);
   const [activeComponent, setActiveComponent] = useState('oauth');
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     // Load face-api.js models
     const loadModels = async () => {
-      const MODEL_URL = process.env.PUBLIC_URL + '/models';
-      await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-      await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
-      await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-      await faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL);
-      setModelsLoaded(true);
+      const MODEL_URL = '/models';
+      try {
+        console.log('Loading models from:', MODEL_URL);
+        await Promise.all([
+          faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+          faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+          faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+          faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
+        ]);
+        setModelsLoaded(true);
+        console.log('Models loaded successfully');
+      } catch (error) {
+        console.error('Error loading models:', error);
+        setError('Failed to load face detection models. Please make sure the models are available in the public/models directory.');
+      }
     };
-
+    
     loadModels();
   }, []);
 
@@ -60,7 +69,11 @@ function App() {
         <Routes>
           <Route path="/" element={
             <div>
-              {modelsLoaded ? (
+              {error ? (
+                <div className="error-message">
+                  <p>{error}</p>
+                </div>
+              ) : modelsLoaded ? (
                 <div className="app-container">
                   {activeComponent === 'faceRecognition' ? (
                     <div className="face-recognition-section">
@@ -89,4 +102,3 @@ function App() {
 }
 
 export default App;
- 

@@ -1,115 +1,64 @@
-/* General container styling for centering and responsive layout */
 .face-recognition-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  max-width: 100%;
+}
+  
+.video-stream {
+  width: 100%;
+  max-width: 720px;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+  
+.capture-button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+  
+.capture-button:hover {
+  background-color: #0056b3;
+}
+  
+.captured-images-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  justify-content: center;
+}
+  
+.captured-image-canvas {
+  margin: 10px;
+  max-width: 240px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+  
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .video-stream {
+    width: 100%;
+    height: auto;
+  }
+
+  .capture-button {
+    width: 100%;
+    padding: 15px;
+    font-size: 18px;
+  }
+
+  .captured-image-canvas {
     max-width: 100%;
   }
-  
-  /* Styling the video element to make it responsive */
-  .video-element {
-    width: 100%;
-    max-width: 720px;
-    height: auto;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    margin-bottom: 20px;
-  }
-  
-  /* Styling the canvas to align it with the video element */
-  .canvas-element {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 720px;
-    height: auto;
-    border-radius: 10px;
-    pointer-events: none; /* Make sure the canvas doesn't block interaction with the video */
-  }
-  
-  /* Styling the capture button */
-  .capture-button {
-    background-color: #007bff;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    margin-top: 20px;
-  }
-  
-  .capture-button:hover {
-    background-color: #0056b3;
-  }
-  
-  /* No face detected message styling */
-  .no-face-detected {
-    margin-top: 20px;
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    max-width: 600px;
-    width: 100%;
-  }
-  
-  .no-face-icon {
-    font-size: 48px;
-    margin-bottom: 10px;
-  }
-  
-  .no-face-detected h3 {
-    color: #dc3545;
-    margin-bottom: 10px;
-  }
-  
-  .no-face-detected p {
-    margin-bottom: 15px;
-    color: #6c757d;
-  }
-  
-  .face-detection-tips {
-    text-align: left;
-    padding-left: 20px;
-    margin-top: 10px;
-  }
-  
-  .face-detection-tips li {
-    margin-bottom: 8px;
-    color: #495057;
-  }
-
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .face-recognition-container {
-      padding: 10px;
-    }
-  
-    .video-element, .canvas-element {
-      width: 100%;
-    }
-  
-    .capture-button {
-      width: 100%;
-      font-size: 14px;
-      padding: 10px;
-    }
-
-    .no-face-detected {
-      padding: 15px;
-      margin-top: 15px;
-    }
-
-    .no-face-icon {
-      font-size: 36px;
-    }
-  }
-  
+}

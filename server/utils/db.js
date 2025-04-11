@@ -1,5 +1,5 @@
 // MongoDB connection and models for face authentication
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 // Connect to MongoDB
@@ -71,10 +71,4 @@ const FaceProfile = mongoose.models.FaceProfile || mongoose.model('FaceProfile',
 const Token = mongoose.models.Token || mongoose.model('Token', tokenSchema);
 const AuthCode = mongoose.models.AuthCode || mongoose.model('AuthCode', authCodeSchema);
 
-module.exports = {
-  connectDB,
-  User,
-  FaceProfile,
-  Token,
-  AuthCode,
-};
+export { connectDB, User, FaceProfile, Token, AuthCode };

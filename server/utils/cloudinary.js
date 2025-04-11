@@ -1,12 +1,12 @@
 // Cloudinary integration for profile picture uploads
-const cloudinary = require('cloudinary').v2;
-const { Readable } = require('stream');
+import { v2 as cloudinary } from 'cloudinary';
+import { Readable } from 'stream';
 
 // Configure Cloudinary with credentials
 cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+  cloud_name: 'your_cloud_name',
+  api_key: 'your_api_key',
+  api_secret: 'your_api_secret'
 });
 
 /**
@@ -61,7 +61,7 @@ function getUserProfileImageUrl(userId) {
   });
 }
 
-module.exports = {
+export {
   uploadImageToCloudinary,
   getUserProfileImageUrl
 };

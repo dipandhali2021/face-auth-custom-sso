@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Face Authentication Authorization</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      body { 
+        font-family: Arial, sans-serif; 
+        margin: 0; 
+        padding: 20px;
+        background-color: #fffbf0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+      .container { 
+        width: 100%;
+        max-width: 450px; 
+        margin: 0 auto; 
+        background-color: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 30px;
+      }
+      .app-icon {
+        background-color: #ffd54f;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: #333;
+      }
+      h1 { 
+        color: #333; 
+        text-align: left;
+        margin-bottom: 15px;
+        font-size: 24px;
+        font-weight: 600;
+      }
+      .subtitle {
+        color: #666;
+        margin-bottom: 25px;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+      .permissions {
+        background-color: #f8f8f8;
+        border-radius: 8px;
+        padding: 15px;
+        margin: 20px 0;
+      }
+      .permissions h3 {
+        margin-top: 0;
+        font-size: 16px;
+        color: #333;
+      }
+      .permissions ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+      .permissions li {
+        margin-bottom: 8px;
+        color: #555;
+      }
+      .buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+        margin-top: 30px;
+      }
+      .btn-cancel { 
+        background: transparent;
+        color: #666; 
+        padding: 12px 24px; 
+        text-decoration: none; 
+        border-radius: 4px; 
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        text-align: center;
+      }
+      .btn-cancel:hover {
+        background: #f5f5f5;
+      }
+      .btn-continue { 
+        background: #34a853;
+        color: white; 
+        padding: 12px 24px; 
+        text-decoration: none; 
+        border-radius: 4px; 
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        text-align: center;
+      }
+      .btn-continue:hover {
+        background: #2f8847;
+      }
+      .footer {
+        margin-top: 30px;
+        text-align: center;
+        font-size: 12px;
+        color: #999;
+      }
+      .footer a {
+        color: #666;
+        text-decoration: none;
+      }
+      .footer a:hover {
+        text-decoration: underline;
+      }
+      @media (max-width: 480px) {
+        .container {
+          padding: 20px;
+        }
+        .buttons {
+          flex-direction: column-reverse;
+        }
+        .btn-cancel, .btn-continue {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      
+      <h1>You're signing in to Face Auth</h1>
+      <p class="subtitle">This will allow Face Auth SSO to access your profile information and verify your identity using facial recognition.</p>
+      
+      <div class="permissions">
+        <h3>Face Auth SSO will receive:</h3>
+        <ul>
+          <li>Your profile information</li>
+          <li>Facial verification status</li>
+          <li>Email address</li>
+        </ul>
+      </div>
+      
+      <div class="buttons">
+        <a href="#" onclick="window.history.back(); return false;" class="btn-cancel">Cancel</a>
+        <a href="/face-auth?request={{requestData}}" class="btn-continue">Continue</a>
+      </div>
+      
+      <div class="footer">
+        <p>By continuing, you agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
+      </div>
+    </div>
+  </body>
+</html>

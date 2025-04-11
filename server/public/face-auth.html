@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Face Authentication</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      body { 
+        font-family: Arial, sans-serif; 
+        margin: 0; 
+        padding: 20px;
+        background-color: #fffbf0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+      .container { 
+        width: 100%;
+        max-width: 450px; 
+        margin: 0 auto; 
+        background-color: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        text-align: center;
+        position: relative;
+      }
+      .icon-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+      .dollar-icon {
+        background-color: #ffd54f;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: #333;
+      }
+      h1 { 
+        color: #333; 
+        text-align: center;
+        margin-bottom: 5px;
+        font-size: 22px;
+        font-weight: 600;
+      }
+      .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 25px;
+        font-size: 14px;
+      }
+      #video-container { 
+        margin: 20px 0; 
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      #video { 
+        width: 100%;
+        max-width: 400px;
+        border-radius: 8px;
+        display: block;
+        margin: 0 auto;
+      }
+      .btn { 
+        background: #666; 
+        color: white; 
+        padding: 12px 24px; 
+        text-decoration: none; 
+        border-radius: 4px; 
+        margin-top: 20px;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .btn:hover {
+        background: #555;
+      }
+      .btn-register { 
+        background: #34a853; 
+        margin-left: 10px;
+      }
+      .btn-register:hover {
+        background: #2d9348;
+      }
+      @media (max-width: 480px) {
+        .container {
+          padding: 20px;
+        }
+        .btn {
+          display: block;
+          width: 100%;
+          margin: 10px auto;
+        }
+        .btn-register {
+          margin-left: 0;
+        }
+      }
+      /* Loading spinner styles */
+      .loading-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(255, 255, 255, 0.9);
+        z-index: 10;
+        border-radius: 12px;
+      }
+      
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #ffd54f;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 15px;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      .loading-text {
+        font-size: 16px;
+        color: #333;
+        text-align: center;
+        margin-top: 10px;
+      }
+      
+      .loading-progress {
+        font-size: 14px;
+        color: #666;
+        margin-top: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      
+      <h1>Face Authentication</h1>
+      <p class="subtitle">Please look at the camera to authenticate</p>
+      
+      <div id="video-container">
+        <video id="video" width="400" height="300" autoplay></video>
+        <canvas id="canvas" width="400" height="300" style="display:none;"></canvas>
+      </div>
+      
+      <div>
+        <button id="authenticate-btn" class="btn">Authenticate</button>
+        <button id="register-btn" class="btn btn-register">Register New Face</button>
+      </div>
+      
+      <form id="auth-form" method="post" action="/face-auth/verify" style="display:none;">
+        <input type="hidden" name="request" id="request-data">
+        <input type="hidden" name="faceImage" id="face-image">
+        <input type="hidden" name="action" id="action-type">
+      </form>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <script>
+      // Get request data from URL parameter
+      const urlParams = new URLSearchParams(window.location.search);
+      const requestData = urlParams.get('request');
+      document.getElementById('request-data').value = requestData;
+      
+      const video = document.getElementById('video');
+      const canvas = document.getElementById('canvas');
+      const authForm = document.getElementById('auth-form');
+      const faceImageInput = document.getElementById('face-image');
+      const actionTypeInput = document.getElementById('action-type');
+      const authenticateBtn = document.getElementById('authenticate-btn');
+      const registerBtn = document.getElementById('register-btn');
+      
+      let modelsLoaded = false;
+      
+      // Create loading overlay
+      const loadingContainer = document.createElement('div');
+      loadingContainer.className = 'loading-container';
+      
+      const spinner = document.createElement('div');
+      spinner.className = 'spinner';
+      
+      const loadingText = document.createElement('div');
+      loadingText.className = 'loading-text';
+      loadingText.textContent = 'Loading face detection models...';
+      
+      const loadingProgress = document.createElement('div');
+      loadingProgress.className = 'loading-progress';
+      loadingProgress.textContent = 'Please wait a moment';
+      
+      loadingContainer.appendChild(spinner);
+      loadingContainer.appendChild(loadingText);
+      loadingContainer.appendChild(loadingProgress);
+      
+      // Add loading overlay to container
+      document.querySelector('.container').appendChild(loadingContainer);
+      
+      // Disable buttons while loading
+      authenticateBtn.disabled = true;
+      registerBtn.disabled = true;
+      
+      // Load face-api.js models
+      async function loadModels() {
+        const MODEL_URL = '/models';
+        try {
+          loadingProgress.textContent = 'Loading face detector...';
+          await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+          
+          loadingProgress.textContent = 'Loading facial landmarks...';
+          await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+          
+          loadingProgress.textContent = 'Loading face recognition...';
+          await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+          
+          modelsLoaded = true;
+          
+          // Remove loading overlay
+          loadingContainer.style.display = 'none';
+          
+          // Enable buttons
+          authenticateBtn.disabled = false;
+          registerBtn.disabled = false;
+        } catch (error) {
+          console.error('Error loading models:', error);
+          loadingText.textContent = 'Error loading face detection models';
+          loadingProgress.textContent = 'Please refresh the page and try again';
+          loadingProgress.style.color = '#e53935';
+        }
+      }
+      
+      // Start video stream
+      async function startVideo() {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+          video.srcObject = stream;
+        } catch (err) {
+          console.error('Error accessing camera:', err);
+          loadingText.textContent = 'Camera access error';
+          loadingProgress.textContent = 'Please ensure camera access is allowed and refresh the page';
+          loadingProgress.style.color = '#e53935';
+        }
+      }
+      
+      // Capture face image
+      function captureFace(action) {
+        if (!modelsLoaded) {
+          // Show loading container again if models aren't loaded
+          loadingContainer.style.display = 'flex';
+          return;
+        }
+        
+        const context = canvas.getContext('2d');
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // Get the image data as base64
+        const imageData = canvas.toDataURL('image/jpeg');
+        faceImageInput.value = imageData.split(',')[1]; // Remove the data URL prefix
+        actionTypeInput.value = action;
+        
+        // For registration, redirect to registration form first
+        if (action === 'register') {
+          // Store the face image in session storage temporarily
+          sessionStorage.setItem('faceImage', imageData.split(',')[1]);
+          // Redirect to registration form
+          window.location.href = '/register?request=' + requestData;
+        } else {
+          // For authentication, submit the form directly
+          authForm.submit();
+        }
+      }
+      
+      // Initialize
+      loadModels();
+      startVideo();
+      
+      // Event listeners
+      authenticateBtn.addEventListener('click', () => captureFace('authenticate'));
+      registerBtn.addEventListener('click', () => captureFace('register'));
+    </script>
+  </body>
+</html>
